@@ -1,6 +1,7 @@
 "use client"
 
-import { motion, useMotionValue, useSpring } from "framer-motion"
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 import {
   ArrowRight,
   Sparkles,
@@ -12,65 +13,31 @@ import {
   Users2,
   Puzzle,
   HeadsetIcon,
-  Building2,
-  DollarSign,
-  Loader2,
 } from "lucide-react"
-import { useEffect, useRef, Suspense } from "react"
 import { useRouter } from "next/navigation"
-import { Footer } from "@/components/footer"
-import { Preloader } from "@/components/preloader"
-import RainingLetters from "@/components/raining-letters"
-import dynamic from "next/dynamic"
-
-// Dynamically import the SpaceGlobe component to avoid SSR issues with Three.js
-const SpaceGlobe = dynamic(() => import("@/components/space-globe"), { ssr: false })
-
-const blink = {
-  "0%, 100%": { opacity: 1 },
-  "50%": { opacity: 0 },
-}
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import Globe from "@/components/Globe"
+import { Footer } from "@/components/Footer"
+import { Navbar } from "@/components/Navbar"
 import { useCountUp } from "@/hooks/useCountUp"
-import TypeWriter from "@/components/type-writer"
-
-// Importar el componente de galería
-import { ImageGallery } from "@/components/image-gallery"
 
 export default function Home() {
   const router = useRouter()
-  const targetRef = useRef<HTMLDivElement>(null)
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const gridX = useSpring(mouseX, {
-    stiffness: 50,
-    damping: 20,
-    mass: 0.5,
-  })
-  const gridY = useSpring(mouseY, {
-    stiffness: 50,
-    damping: 20,
-    mass: 0.5,
-  })
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const centerX = window.innerWidth / 2
-      const centerY = window.innerHeight / 2
-      mouseX.set(((e.clientX - centerX) / centerX) * 20)
-      mouseY.set(((e.clientY - centerY) / centerY) * 20)
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [mouseX, mouseY])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   const projectsCount = useCountUp(1234)
   const deploymentCount = useCountUp(5678)
   const securityCount = useCountUp(99)
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -96,113 +63,68 @@ export default function Home() {
   }
 
   return (
-    <div ref={targetRef} className="min-h-screen bg-transparent text-white overflow-hidden select-none">
-      <Preloader />
+    <div className="relative min-h-screen bg-black">
+      <Navbar />
 
-      {/* Globe above the title */}
-      <div className="w-full max-w-3xl mx-auto mb-8">
-        <Suspense
-          fallback={
-            <div className="w-full h-[40vh] bg-black flex items-center justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-white" />
-            </div>
-          }
-        >
-          <SpaceGlobe />
-        </Suspense>
-      </div>
+      {/* Globe Section */}
+      <section className="h-screen w-full relative overflow-hidden">
+        <Globe />
 
-      <div className="relative z-10">
-        <motion.section className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-12 sm:py-16 lg:py-20">
+        {/* Hero Content Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center z-10">
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="text-center max-w-[90%] sm:max-w-3xl mx-auto space-y-6 sm:space-y-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isLoaded ? 1 : 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full"
           >
-            <motion.h1
-              variants={itemVariants}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight flex flex-wrap items-center justify-center gap-2"
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-center max-w-[90%] sm:max-w-3xl mx-auto space-y-6 sm:space-y-8"
             >
-              <span className="bg-white text-black px-2">OsorIA</span>
-              <span className="flex items-center">
-                <TypeWriter text=".tech" delay={150} />
-                <span className="w-[2px] h-[1em] bg-white animate-[blink_1s_ease-in-out_infinite]" />
-              </span>
-            </motion.h1>
-            <motion.p
-              variants={itemVariants}
-              className="text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto px-4"
-            >
-              No debes ser experto en IA, nosotros hacemos lo difícil por ti
-            </motion.p>
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto mt-4 sm:mt-8 border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out text-base px-6 py-4 h-auto bg-transparent"
-                onClick={() => router.push("/login")}
+              <motion.h1
+                variants={itemVariants}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight flex flex-wrap items-center justify-center gap-2"
               >
-                Comenzar ahora
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="ghost"
-                className="w-full sm:w-auto mt-4 sm:mt-8 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out text-base px-6 py-4 h-auto"
-                onClick={() => router.push("/register")}
+                <span className="bg-white text-black px-2">OsorIA</span>
+                <span>.tech</span>
+              </motion.h1>
+              <motion.p
+                variants={itemVariants}
+                className="text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto px-4"
               >
-                Regístrate
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+                No debes ser experto en IA, nosotros hacemos lo difícil por ti
+              </motion.p>
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto mt-4 sm:mt-8 border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out text-base px-6 py-4 h-auto bg-transparent"
+                  onClick={() => router.push("/login")}
+                >
+                  Comenzar ahora
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="w-full sm:w-auto mt-4 sm:mt-8 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out text-base px-6 py-4 h-auto"
+                  onClick={() => router.push("/register")}
+                >
+                  Regístrate
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </motion.div>
             </motion.div>
           </motion.div>
-        </motion.section>
+        </div>
+      </section>
 
-        {/* Añadir la galería justo después de la primera sección y antes de "Nuestro impacto en cifras" */}
-        {/* Buscar la línea que cierra la primera sección: */}
-        {/* </motion.section> */}
-
-        {/* Y añadir la siguiente sección de galería justo después: */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
-        >
-          <ImageGallery
-            images={[
-              {
-                src: "/images/marketing-digital.png",
-                alt: "Plataforma de marketing digital",
-                title: "Soluciones de marketing digital",
-                description: "Herramientas avanzadas para optimizar tus campañas y aumentar conversiones",
-              },
-              {
-                src: "/images/data-analysis.png",
-                alt: "Análisis de datos",
-                title: "Análisis de datos en tiempo real",
-                description: "Visualiza y comprende el comportamiento de tus clientes para tomar mejores decisiones",
-              },
-              {
-                src: "/images/automation.png",
-                alt: "Automatización de procesos",
-                title: "Automatización inteligente",
-                description: "Optimiza tus flujos de trabajo y ahorra tiempo con nuestras soluciones de automatización",
-              },
-              {
-                src: "/images/integration.png",
-                alt: "Integración con plataformas",
-                title: "Integración con múltiples plataformas",
-                description: "Conecta con tus herramientas favoritas y centraliza toda tu información",
-              },
-            ]}
-          />
-        </motion.section>
-
-        {/* Sección de Raining Letters */}
-        <RainingLetters />
-
-        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mx-4">
+      {/* Rest of the content */}
+      <div className="bg-black">
+        {/* Stats Section */}
+        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -230,13 +152,13 @@ export default function Home() {
                 Mira cómo transformamos negocios en todo el mundo
               </motion.p>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true }}
-                className="p-6 text-center"
+                className="p-6 text-center backdrop-blur-sm bg-black/20 rounded-lg"
               >
                 <Users2 className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
                 <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">{projectsCount.toLocaleString()}</div>
@@ -247,9 +169,9 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="p-6 text-center"
+                className="p-6 text-center backdrop-blur-sm bg-black/20 rounded-lg"
               >
-                <Building2 className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
+                <Workflow className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
                 <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
                   {deploymentCount.toLocaleString()}
                 </div>
@@ -260,18 +182,17 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="p-6 text-center"
+                className="p-6 text-center backdrop-blur-sm bg-black/20 rounded-lg"
               >
-                <DollarSign className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-                  ${(securityCount * 100000).toLocaleString()}
-                </div>
-                <p className="text-gray-400 text-sm sm:text-base">Ingresos Generados</p>
+                <ShieldCheckIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">{securityCount}%</div>
+                <p className="text-gray-400 text-sm sm:text-base">Seguridad Garantizada</p>
               </motion.div>
             </div>
           </motion.div>
         </section>
 
+        {/* Features Section */}
         <motion.section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -291,11 +212,7 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {features.map((feature, index) => (
                 <motion.div key={feature.title} variants={itemVariants} custom={index}>
-                  <Card
-                    role="button"
-                    tabIndex={0}
-                    className="p-4 sm:p-6 bg-transparent backdrop-blur-2xl border-gray-500 text-white blur-[0.4px] transition-transform duration-300 hover:scale-105 cursor-pointer h-full"
-                  >
+                  <Card className="p-4 sm:p-6 bg-transparent backdrop-blur-2xl border-gray-500 text-white blur-[0.4px] transition-transform duration-300 hover:scale-105 cursor-pointer h-full">
                     <feature.icon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4" />
                     <h3 className="text-lg sm:text-xl font-semibold mb-2">{feature.title}</h3>
                     <p className="text-gray-400 text-sm sm:text-base">{feature.description}</p>
@@ -306,6 +223,7 @@ export default function Home() {
           </motion.div>
         </motion.section>
 
+        {/* Pricing Section */}
         <motion.section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -333,7 +251,7 @@ export default function Home() {
                   <CardContent>
                     <div className="mb-4">
                       <span className="text-2xl sm:text-4xl font-bold">$0</span>
-                      <span className="text-gray-400 ml-2 text-sm sm:text-base">/ month</span>
+                      <span className="text-gray-400 ml-2 text-sm sm:text-base">/ mes</span>
                     </div>
                     <ul className="space-y-3 text-sm sm:text-base text-gray-300">
                       <li className="flex items-center">
@@ -372,7 +290,7 @@ export default function Home() {
                   <CardContent>
                     <div className="mb-4">
                       <span className="text-2xl sm:text-4xl font-bold">$4.99</span>
-                      <span className="text-gray-400 ml-2 text-sm sm:text-base">/ month</span>
+                      <span className="text-gray-400 ml-2 text-sm sm:text-base">/ mes</span>
                     </div>
                     <ul className="space-y-3 text-sm sm:text-base text-gray-300">
                       <li className="flex items-center">
@@ -395,14 +313,7 @@ export default function Home() {
                   </CardContent>
                   <CardFooter>
                     <Button
-                      onClick={() => {
-                        const userData = localStorage.getItem("userData")
-                        if (userData) {
-                          router.push("/payment?plan=pro")
-                        } else {
-                          router.push("/login?redirect=/payment?plan=pro")
-                        }
-                      }}
+                      onClick={() => router.push("/login?redirect=/payment?plan=pro")}
                       className="w-full border-2 border-white text-sm sm:text-lg py-4 sm:py-6 px-4 sm:px-8 text-black bg-white hover:bg-transparent hover:text-white transition-all duration-300"
                     >
                       Actualizar a Pro
@@ -427,7 +338,7 @@ export default function Home() {
                   <CardContent>
                     <div className="mb-4">
                       <span className="text-2xl sm:text-4xl font-bold">$29.99</span>
-                      <span className="text-gray-400 ml-2 text-sm sm:text-base">/ month</span>
+                      <span className="text-gray-400 ml-2 text-sm sm:text-base">/ mes</span>
                     </div>
                     <ul className="space-y-3 text-sm sm:text-base text-gray-300">
                       <li className="flex items-center">
@@ -454,14 +365,7 @@ export default function Home() {
                   </CardContent>
                   <CardFooter>
                     <Button
-                      onClick={() => {
-                        const userData = localStorage.getItem("userData")
-                        if (userData) {
-                          router.push("/payment?plan=premium")
-                        } else {
-                          router.push("/login?redirect=/payment?plan=premium")
-                        }
-                      }}
+                      onClick={() => router.push("/login?redirect=/payment?plan=premium")}
                       className="w-full border-2 border-white text-sm sm:text-lg py-4 sm:py-6 px-4 sm:px-8 text-black bg-white hover:bg-transparent hover:text-white transition-all duration-300"
                     >
                       Obtener Premium
@@ -484,13 +388,12 @@ const features = [
   {
     title: "Desarrollo de aplicaciones móviles",
     description:
-      "Desarrollamos aplicaciones móviles a medida para tu empresa, creadas rápidamente gracias a la inteligencia artificial, optimizando procesos y mejorando la experiencia de tus clientes.",
+      "Desarrollamos aplicaciones móviles a medida para tu empresa, creadas rápidamente gracias a la inteligencia artificial.",
     icon: Workflow,
   },
   {
     title: "Análisis de datos empresariales",
-    description:
-      "Transforma los datos de tu empresa en información estratégica. Realizamos análisis avanzados utilizando inteligencia artificial, generando gráficos personalizados y proporcionando insights clave para diseñar estrategias que optimicen tu negocio.",
+    description: "Transforma los datos de tu empresa en información estratégica utilizando inteligencia artificial.",
     icon: BarChart3,
   },
   {
