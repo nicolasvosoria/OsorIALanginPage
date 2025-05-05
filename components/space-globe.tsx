@@ -1,11 +1,11 @@
-"\"use client"
+"use client"
 
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { Color } from "three"
 
-export default function Globe() {
+export default function SpaceGlobe() {
   const mountRef = useRef<HTMLDivElement>(null)
   const [isHighResLoaded, setIsHighResLoaded] = useState(false)
   const [showHint, setShowHint] = useState(true)
@@ -17,8 +17,19 @@ export default function Globe() {
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(window.devicePixelRatio)
+
+    // Ajustar el tamaño para que se adapte al contenedor
+    const updateSize = () => {
+      if (mountRef.current) {
+        const width = mountRef.current.clientWidth
+        const height = mountRef.current.clientHeight
+        renderer.setSize(width, height)
+        camera.aspect = width / height
+        camera.updateProjectionMatrix()
+      }
+    }
+
+    updateSize()
     mountRef.current.appendChild(renderer.domElement)
 
     // Create a starfield
@@ -165,52 +176,54 @@ export default function Globe() {
 
     // Load high-resolution textures
     const textureLoader = new THREE.TextureLoader()
-    const loadTexture = (url: string) =>
-      new Promise((resolve) => {
-        textureLoader.load(url, (texture) => resolve(texture))
-      })
 
-    Promise.all([
-      loadTexture("/earth-texture-compressed.jpg"),
-      loadTexture("/earth-bump-compressed.jpg"),
-      loadTexture("/earth-specular-compressed.jpg"),
-    ]).then(([texture, bumpMap, specularMap]) => {
-      const highResMaterial = new THREE.MeshPhongMaterial({
-        map: texture as THREE.Texture,
-        bumpMap: bumpMap as THREE.Texture,
-        bumpScale: 0.05,
-        specularMap: specularMap as THREE.Texture,
-        specular: new THREE.Color("grey"),
-      })
+    try {
+      Promise.all([
+        textureLoader.loadAsync("/earth-texture-compressed.jpg"),
+        textureLoader.loadAsync("/earth-bump-compressed.jpg"),
+        textureLoader.loadAsync("/earth-specular-compressed.jpg"),
+      ])
+        .then(([texture, bumpMap, specularMap]) => {
+          const highResMaterial = new THREE.MeshPhongMaterial({
+            map: texture,
+            bumpMap: bumpMap,
+            bumpScale: 0.05,
+            specularMap: specularMap,
+            specular: new THREE.Color("grey"),
+          })
 
-      // Transition to the high-res textured globe
-      const transitionDuration = 1 // seconds
-      const startTime = Date.now()
+          // Transition to the high-res textured globe
+          const transitionDuration = 1 // seconds
+          const startTime = Date.now()
 
-      const transitionToHighRes = () => {
-        const elapsedTime = (Date.now() - startTime) / 1000
-        const progress = Math.min(elapsedTime / transitionDuration, 1)
+          const transitionToHighRes = () => {
+            const elapsedTime = (Date.now() - startTime) / 1000
+            const progress = Math.min(elapsedTime / transitionDuration, 1)
 
-        solidGlobe.material = highResMaterial
-        solidGlobe.material.opacity = progress
-        wireframeMaterial.opacity = 0.5 * (1 - progress)
+            solidGlobe.material = highResMaterial
+            solidGlobe.material.opacity = progress
+            wireframeMaterial.opacity = 0.5 * (1 - progress)
 
-        if (progress < 1) {
-          requestAnimationFrame(transitionToHighRes)
-        } else {
-          setIsHighResLoaded(true)
-          scene.remove(wireframeGlobe)
-        }
-        renderer.render(scene, camera)
-      }
+            if (progress < 1) {
+              requestAnimationFrame(transitionToHighRes)
+            } else {
+              setIsHighResLoaded(true)
+              scene.remove(wireframeGlobe)
+            }
+            renderer.render(scene, camera)
+          }
 
-      transitionToHighRes()
-    })
+          transitionToHighRes()
+        })
+        .catch((error) => {
+          console.error("Error loading textures:", error)
+        })
+    } catch (error) {
+      console.error("Error in texture loading:", error)
+    }
 
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(window.innerWidth, window.innerHeight)
+      updateSize()
     }
     window.addEventListener("resize", handleResize)
 
@@ -221,16 +234,18 @@ export default function Globe() {
     return () => {
       window.removeEventListener("resize", handleResize)
       cancelAnimationFrame(animationId)
-      mountRef.current?.removeChild(renderer.domElement)
+      if (mountRef.current && mountRef.current.contains(renderer.domElement)) {
+        mountRef.current.removeChild(renderer.domElement)
+      }
       controls.dispose()
       clearTimeout(hintTimer)
     }
   }, [])
 
   return (
-    <div ref={mountRef} className="fixed top-0 left-0 w-full h-full z-0">
+    <div ref={mountRef} className="w-full h-full relative">
       {showHint && (
-        <div className="absolute bottom-4 right-4 bg-black bg-opacity-30 text-white text-sm px-3 py-1 rounded-full transition-opacity duration-1000 opacity-80 hover:opacity-100">
+        <div className="absolute bottom-4 right-4 bg-black bg-opacity-30 text-white text-sm px-3 py-1 rounded-full transition-opacity duration-1000 opacity-80 hover:opacity-100 z-10">
           Drag to explore
         </div>
       )}
