@@ -53,7 +53,7 @@ export function ContactForm() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name" className="text-white">
+            <Label htmlFor="name" className="text-white" style={{ color: "#11B30B" }}>
               Nombre
             </Label>
             <Input
@@ -66,7 +66,7 @@ export function ContactForm() {
           </div>
 
           <div>
-            <Label htmlFor="email" className="text-white">
+            <Label htmlFor="email" className="text-white" style={{ color: "#11B30B" }}>
               Email
             </Label>
             <Input
@@ -80,7 +80,7 @@ export function ContactForm() {
           </div>
 
           <div>
-            <Label htmlFor="phone" className="text-white">
+            <Label htmlFor="phone" className="text-white" style={{ color: "#11B30B" }}>
               Teléfono (opcional)
             </Label>
             <Input
@@ -92,7 +92,7 @@ export function ContactForm() {
           </div>
 
           <div>
-            <Label htmlFor="idea" className="text-white">
+            <Label htmlFor="idea" className="text-white" style={{ color: "#11B30B" }}>
               Tu idea
             </Label>
             <Textarea

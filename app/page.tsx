@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Footer } from "@/components/footer"
 import { Preloader } from "@/components/preloader"
+import Image from "next/image"
 
 // Import components
 import { Button } from "@/components/ui/button"
@@ -13,8 +14,8 @@ import { Card } from "@/components/ui/card"
 import TypeWriter from "@/components/type-writer"
 import RainingLetters from "@/components/raining-letters"
 import { ContactForm } from "@/components/contact-form"
-import { SuccessCasesCarousel } from "@/components/success-cases-carousel"
-import SpaceGlobeLite from "@/components/space-globe-lite"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { ChatBot } from "@/components/chat-bot"
 
 const blink = {
   "0%, 100%": { opacity: 1 },
@@ -76,6 +77,7 @@ export default function Home() {
   return (
     <div ref={targetRef} className="min-h-screen bg-transparent text-white overflow-hidden select-none">
       <Preloader />
+      <SpeedInsights />
 
       {/* Background */}
       <motion.div className="fixed inset-0 z-0">
@@ -97,43 +99,28 @@ export default function Home() {
       </motion.div>
 
       <div className="relative z-10">
-        {/* NUEVA SECCIÓN: Space Globe */}
-        <section
-          id="space-globe"
-          className="min-h-[100vh] flex flex-col items-center justify-center px-4 py-12 sm:py-16 lg:py-20"
-        >
-          <div className="w-full max-w-7xl mx-auto relative">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-              className="text-center mb-8"
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Explora el Universo Digital</h2>
-              <p className="text-gray-400 max-w-2xl mx-auto">
-                Navega por un mundo de posibilidades con nuestra tecnología de vanguardia
-              </p>
-            </motion.div>
-
-            {/* Contenedor para el Space Globe */}
-            <div className="relative h-[60vh] w-full flex items-center justify-center">
-              <div className="w-full h-full max-w-3xl mx-auto">
-                <SpaceGlobeLite />
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* SECCIÓN 1: Hero Section */}
         <section
           id="hero"
-          className="min-h-[100vh] flex flex-col items-center justify-center px-4 py-12 sm:py-16 lg:py-20"
+          className="min-h-[75vh] flex flex-col items-center justify-center px-4 py-2 sm:py-4 lg:py-6 relative"
         >
+          {/* Robot Hand Image - Top Left Corner */}
+          <div className="absolute top-0 left-0 z-20">
+            <Image
+              src="/images/robot-hand.webp"
+              alt="Robot Hand"
+              width={500}
+              height={700}
+              className="hidden lg:block lg:w-[32rem] lg:h-[40rem] xl:w-[36rem] xl:h-[44rem] object-contain opacity-80"
+              priority
+            />
+          </div>
+
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="text-center max-w-[90%] sm:max-w-3xl mx-auto space-y-6 sm:space-y-8"
+            className="text-center max-w-[90%] sm:max-w-3xl mx-auto space-y-6 sm:space-y-8 relative z-30"
           >
             <motion.h1
               variants={itemVariants}
@@ -178,14 +165,15 @@ export default function Home() {
           </motion.div>
         </section>
 
+        {/* Rest of the sections remain unchanged */}
         {/* SECCIÓN 2: Stats Section - Movida a segunda posición */}
-        <section id="estadisticas" className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mx-4">
+        <section id="estadisticas" className="py-2 sm:py-4 px-4 sm:px-6 lg:px-8 mx-4">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 1 }}
             viewport={{ once: true }}
-            className="max-w-7xl mx-auto space-y-12"
+            className="max-w-7xl mx-auto space-y-6"
           >
             <div className="text-center px-4">
               <motion.h2
@@ -216,7 +204,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="p-6 text-center"
               >
-                <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
+                <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
                 <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">99.8%</div>
                 <p className="text-gray-400 text-sm sm:text-base">Precisión en análisis de datos</p>
               </motion.div>
@@ -227,7 +215,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="p-6 text-center"
               >
-                <Puzzle className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
+                <Puzzle className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
                 <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">+200</div>
                 <p className="text-gray-400 text-sm sm:text-base">Modelos personalizados entrenados para empresas</p>
               </motion.div>
@@ -238,7 +226,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="p-6 text-center"
               >
-                <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4 mx-auto" />
+                <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
                 <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">+12.000</div>
                 <p className="text-gray-400 text-sm sm:text-base">Procesos automatizados</p>
               </motion.div>
@@ -261,7 +249,11 @@ export default function Home() {
             className="max-w-7xl mx-auto"
           >
             <div className="text-center mb-12">
-              <motion.h2 variants={itemVariants} className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 px-4">
+              <motion.h2
+                variants={itemVariants}
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 px-4"
+                style={{ color: "#11B30B" }}
+              >
                 Nuestros servicios
               </motion.h2>
               <motion.p variants={itemVariants} className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base px-4">
@@ -274,11 +266,68 @@ export default function Home() {
                   <Card
                     role="button"
                     tabIndex={0}
-                    className="p-4 sm:p-6 bg-transparent backdrop-blur-2xl border-gray-500 text-white blur-[0.4px] transition-transform duration-300 hover:scale-105 cursor-pointer h-full"
+                    className="p-4 sm:p-6 bg-transparent backdrop-blur-2xl border-gray-500 text-white blur-[0.4px] transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black cursor-pointer h-full group"
                   >
-                    <feature.icon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg sm:text-xl font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-gray-400 text-sm sm:text-base">{feature.description}</p>
+                    {feature.title === "Desarrollo de soluciones con IA" ? (
+                      <Image
+                        src="/icons/ai-solution-icon.svg"
+                        alt="AI Solution Icon"
+                        width={48}
+                        height={48}
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 transition-all duration-300"
+                      />
+                    ) : feature.title === "Automatiza procesos operativos" ? (
+                      <Image
+                        src="/icons/automation-icon.svg"
+                        alt="Automation Icon"
+                        width={48}
+                        height={48}
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 transition-all duration-300"
+                      />
+                    ) : feature.title === "Análisis predictivo de datos" ? (
+                      <Image
+                        src="/icons/analytics-icon.svg"
+                        alt="Analytics Icon"
+                        width={48}
+                        height={48}
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 transition-all duration-300"
+                      />
+                    ) : feature.title === "Creamos páginas web personalizadas" ? (
+                      <Image
+                        src="/icons/web-development-icon.svg"
+                        alt="Web Development Icon"
+                        width={48}
+                        height={48}
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 transition-all duration-300"
+                      />
+                    ) : feature.title === "Identificación de oportunidades" ? (
+                      <Image
+                        src="/icons/opportunities-icon.svg"
+                        alt="Opportunities Icon"
+                        width={48}
+                        height={48}
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 transition-all duration-300"
+                      />
+                    ) : feature.title === "Integramos tus soluciones digitales" ? (
+                      <Image
+                        src="/icons/integration-icon.svg"
+                        alt="Integration Icon"
+                        width={48}
+                        height={48}
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 transition-all duration-300"
+                      />
+                    ) : (
+                      <feature.icon
+                        className="w-8 h-8 sm:w-12 sm:h-12 mb-4 group-hover:text-black transition-colors"
+                        style={{ color: "#11B30B" }}
+                      />
+                    )}
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-black transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm sm:text-base group-hover:text-black transition-colors">
+                      {feature.description}
+                    </p>
                   </Card>
                 </motion.div>
               ))}
@@ -286,19 +335,7 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* SECCIÓN 4: Success Cases Section */}
-        <section id="casos-exito" className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <SuccessCasesCarousel />
-          </motion.div>
-        </section>
-
-        {/* SECCIÓN 6: CTA Section with Contact Form */}
+        {/* SECCIÓN 6: CTA Section with Contact Form - Ahora en dos columnas */}
         <section id="contacto" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -307,30 +344,38 @@ export default function Home() {
             viewport={{ once: true }}
             className="max-w-7xl mx-auto"
           >
-            <div className="text-center mb-12">
-              <motion.h2
-                variants={itemVariants}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white font-serif"
-              >
-                ¿Tienes una idea?
-              </motion.h2>
-              <motion.p variants={itemVariants} className="text-3xl sm:text-4xl text-white font-bold mb-12 font-serif">
-                Empieza a construirla con nosotros.
-              </motion.p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+              {/* Columna izquierda: Título, subtítulo e imagen */}
+              <motion.div variants={itemVariants} className="flex flex-col items-center text-center pt-0">
+                <h2 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 text-white font-['Montserrat'] leading-tight">
+                  ¿Tienes una idea?
+                </h2>
+                <p className="text-2xl sm:text-3xl text-white font-bold mb-8 font-['Montserrat']">
+                  Empieza a construirla con nosotros.
+                </p>
+                <div className="relative w-full flex justify-end">
+                  <div className="w-1/2 md:w-3/5 lg:w-1/2">
+                    <Image
+                      src="/images/imagen-cierre-web.webp"
+                      alt="Mano robótica apuntando hacia arriba"
+                      width={350}
+                      height={350}
+                      className="w-full h-auto object-contain ml-auto"
+                      quality={100}
+                    />
+                  </div>
+                </div>
+              </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="max-w-md mx-auto"
-              >
+              {/* Columna derecha: Formulario de contacto */}
+              <motion.div variants={itemVariants} className="w-full max-w-md mx-auto">
                 <ContactForm />
               </motion.div>
             </div>
           </motion.div>
         </section>
 
+        <ChatBot />
         <Footer />
       </div>
     </div>
