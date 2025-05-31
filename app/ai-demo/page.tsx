@@ -31,6 +31,7 @@ export default function AIDemo() {
         </Button>
       </div>
 
+
       {/* Contenedor principal de la animación */}
       <div className="relative w-full h-screen flex items-center justify-center">
         {loading ? (
