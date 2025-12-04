@@ -1,5 +1,11 @@
 import Link from "next/link"
 import { Linkedin, Instagram } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function Footer() {
   return (
@@ -31,15 +37,24 @@ export function Footer() {
             <Linkedin className="w-6 h-6" />
             <span className="sr-only">LinkedIn</span>
           </Link>
-          <Link
-            href="https://www.instagram.com/osoriatech"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <Instagram className="w-6 h-6" />
-            <span className="sr-only">Instagram</span>
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="https://www.instagram.com/osoriatech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <Instagram className="w-6 h-6" />
+                  <span className="sr-only">Instagram</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Síguenos en nuestras redes sociales</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           
         </div>
       </div>
