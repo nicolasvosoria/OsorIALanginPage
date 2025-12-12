@@ -126,7 +126,7 @@ export default function Home() {
           >
             <motion.h1
               variants={itemVariants}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight flex flex-wrap items-center justify-center gap-2"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight flex flex-wrap items-center justify-center gap-2"
             >
               <span className="bg-white text-black px-2">OsorIA</span>
               <span className="flex items-center">
@@ -136,14 +136,14 @@ export default function Home() {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto px-4"
+              className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-2xl mx-auto px-4"
             >
               No debes ser experto en IA, nosotros hacemos lo difícil por ti
             </motion.p>
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center px-4">
               <Button
                 size="lg"
-                className="w-full sm:w-auto mt-4 sm:mt-8 border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out text-base px-6 py-4 h-auto bg-transparent"
+                className="w-full sm:w-auto mt-4 sm:mt-8 border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out text-lg px-6 py-4 h-auto bg-transparent"
                 onClick={() => {
                   const contactSection = document.getElementById("contacto")
                   if (contactSection) {
@@ -157,7 +157,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="ghost"
-                className="w-full sm:w-auto mt-4 sm:mt-8 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out text-base px-6 py-4 h-auto"
+                className="w-full sm:w-auto mt-4 sm:mt-8 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out text-lg px-6 py-4 h-auto"
                 onClick={() => router.push("/ai-demo")}
               >
                 Mira lo que puede generar la IA
@@ -183,7 +183,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true }}
-                className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4"
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
               >
                 3.24 Millones de empresas en Colombia
               </motion.h2>
@@ -192,7 +192,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base"
+                className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg"
               >
                 El 98 % valora la transformación digital, pero solo el 58 % actúa, y apenas el 5 % usa inteligencia
                 artificial. Nosotros llegamos para cerrar esa brecha y desbloquear su verdadero potencial.
@@ -207,8 +207,8 @@ export default function Home() {
                 className="p-6 text-center"
               >
                 <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">99.8%</div>
-                <p className="text-gray-400 text-sm sm:text-base">Precisión en análisis de datos</p>
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">99.8%</div>
+                <p className="text-gray-400 text-base sm:text-lg">Precisión en análisis de datos</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -218,8 +218,8 @@ export default function Home() {
                 className="p-6 text-center"
               >
                 <Puzzle className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">+200</div>
-                <p className="text-gray-400 text-sm sm:text-base">Modelos personalizados entrenados para empresas</p>
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">+200</div>
+                <p className="text-gray-400 text-base sm:text-lg">Modelos personalizados entrenados para empresas</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -229,8 +229,8 @@ export default function Home() {
                 className="p-6 text-center"
               >
                 <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">+12.000</div>
-                <p className="text-gray-400 text-sm sm:text-base">Procesos automatizados</p>
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">+12.000</div>
+                <p className="text-gray-400 text-base sm:text-lg">Procesos automatizados</p>
               </motion.div>
             </div>
           </motion.div>
@@ -253,12 +253,12 @@ export default function Home() {
             <div className="text-center mb-12">
               <motion.h2
                 variants={itemVariants}
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 px-4"
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 px-4"
                 style={{ color: "#11B30B" }}
               >
                 Nuestros servicios
               </motion.h2>
-              <motion.p variants={itemVariants} className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base px-4">
+              <motion.p variants={itemVariants} className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg px-4">
                 Todo lo necesario para hacer crecer tu negocio y satisfacer a tus clientes
               </motion.p>
             </div>
@@ -324,10 +324,10 @@ export default function Home() {
                         style={{ color: "#11B30B" }}
                       />
                     )}
-                    <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-black transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-semibold mb-2 group-hover:text-black transition-colors">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-400 text-sm sm:text-base group-hover:text-black transition-colors">
+                    <p className="text-gray-400 text-base sm:text-lg group-hover:text-black transition-colors">
                       {feature.description}
                     </p>
                   </Card>
@@ -349,10 +349,10 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
               {/* Columna izquierda: Título, subtítulo e imagen */}
               <motion.div variants={itemVariants} className="flex flex-col items-center text-center pt-0">
-                <h2 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 text-white font-['Montserrat'] leading-tight">
+                <h2 className="text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-bold mb-4 text-white font-['Montserrat'] leading-tight">
                   ¿Tienes una idea?
                 </h2>
-                <p className="text-2xl sm:text-3xl text-white font-bold mb-8 font-['Montserrat']">
+                <p className="text-3xl sm:text-4xl text-white font-bold mb-8 font-['Montserrat']">
                   Empieza a construirla con nosotros.
                 </p>
                 <div className="relative w-full flex justify-end">
