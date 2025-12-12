@@ -1,5 +1,11 @@
 import Link from "next/link"
 import { Linkedin, Instagram } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function Footer() {
   return (
