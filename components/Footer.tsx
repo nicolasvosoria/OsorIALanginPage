@@ -1,5 +1,11 @@
 import Link from "next/link"
 import { Linkedin, Instagram } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function Footer() {
   return (
@@ -19,9 +25,6 @@ export function Footer() {
           <Link href="#" className="hover:text-white transition-colors">
             Privacidad
           </Link>
-          <Link href="#" className="hover:text-white transition-colors">
-            Contacto
-          </Link>
         </div>
 
         <div className="flex gap-4">
@@ -34,41 +37,25 @@ export function Footer() {
             <Linkedin className="w-6 h-6" />
             <span className="sr-only">LinkedIn</span>
           </Link>
-          <Link
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <Instagram className="w-6 h-6" />
-            <span className="sr-only">Instagram</span>
-          </Link>
-          <Link
-            href="https://tiktok.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-6 h-6"
-            >
-              <path d="M9 12a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path>
-              <path d="M16 8v8"></path>
-              <path d="M12 16v4"></path>
-              <path d="M20 12V8h-4"></path>
-              <path d="M16 8a4 4 0 0 0-4-4"></path>
-            </svg>
-            <span className="sr-only">TikTok</span>
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="https://www.instagram.com/osoriatech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <Instagram className="w-6 h-6" />
+                  <span className="sr-only">Instagram</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Síguenos en nuestras redes sociales</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
         </div>
       </div>
     </footer>

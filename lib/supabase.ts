@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js"
 
 // URL de Supabase
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://hiyotpejjfpwzhhghcar.supabase.co"
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://yudejamenhxzipvdjrxq.supabase.co"
 
 // Verificar que las claves de API estén definidas
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY

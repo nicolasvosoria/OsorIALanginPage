@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server"
+// Lógica del chatbot reutilizable
+// Extraída de app/api/chat-simple/route.ts
 
 // Base de datos de preguntas y respuestas
 const faqDatabase: Array<{ keywords: string[]; response: string }> = [
@@ -103,6 +104,54 @@ const faqDatabase: Array<{ keywords: string[]; response: string }> = [
     response: "Depende del nivel de soporte, desde $X.",
   },
   {
+    keywords: ["logotipos", "branding", "diseño gráfico", "hacen logos"],
+    response: "Sí, tenemos servicio de diseño gráfico adicional.",
+  },
+  {
+    keywords: ["facturación electrónica", "facturación en web", "factura electrónica web"],
+    response: "Sí, integramos pasarelas y sistemas autorizados.",
+  },
+  {
+    keywords: ["crm a medida", "crm personalizado", "desarrollan crm"],
+    response: "Sí, desarrollamos plataformas personalizadas.",
+  },
+  {
+    keywords: ["información entregar página web", "qué información necesitan", "datos para página web"],
+    response: "Logo, textos, imágenes y aviso de funcionalidades deseadas.",
+  },
+  {
+    keywords: ["generar contenido", "crear contenido página", "redacción contenido"],
+    response: "Sí, ofrecemos servicio de redacción profesional.",
+  },
+  {
+    keywords: ["entregan factura", "emiten factura", "facturan"],
+    response: "Sí, emitimos factura según lo requerido.",
+  },
+  {
+    keywords: ["conectar tienda inventario", "sincronización inventarios", "inventario físico tienda"],
+    response: "Sí, hacemos sincronización de inventarios.",
+  },
+  {
+    keywords: ["integrar envíos", "envíos en línea", "conectar envíos"],
+    response: "Sí, conectamos con Servientrega, Coordinadora, Envia, etc.",
+  },
+  {
+    keywords: ["optimizadas móviles", "responsive", "adaptado móvil", "móvil responsive"],
+    response: "Sí, todas son responsive.",
+  },
+  {
+    keywords: ["administrar página después", "acceso administración", "puedo administrar"],
+    response: "Sí, te damos acceso y capacitación.",
+  },
+  {
+    keywords: ["campañas marketing digital", "marketing digital", "meta ads", "google ads"],
+    response: "Sí, campañas en Meta Ads, Google Ads y más.",
+  },
+  {
+    keywords: ["formas de pago aceptan", "métodos de pago aceptan", "cómo puedo pagar"],
+    response: "Transferencia, tarjeta, pasarelas online.",
+  },
+  {
     keywords: ["integrar whatsapp sitio", "whatsapp con sitio web", "botón whatsapp web"],
     response: "Sí, botones, enlaces directos o chatbots completos.",
   },
@@ -168,7 +217,7 @@ const faqDatabase: Array<{ keywords: string[]; response: string }> = [
   },
   {
     keywords: ["más de un servicio", "combinar servicios", "varios servicios"],
-    response: "Sí, puedes combinar web e IA según tus necesidades.",
+    response: "Sí, puedes combinar web, IA y validación de WhatsApp.",
   },
   {
     keywords: ["auditorías de datos", "auditoría datos", "evaluación datos"],
@@ -235,6 +284,58 @@ const faqDatabase: Array<{ keywords: string[]; response: string }> = [
     response: "Solo envíanos un mensaje con la palabra INICIAR y te guiamos.",
   },
   {
+    keywords: ["conectar whatsapp crm", "whatsapp con crm", "integrar whatsapp crm"],
+    response: "Sí, integramos con HubSpot, Zoho, Bitrix y más.",
+  },
+  {
+    keywords: ["cuál servicio necesito", "qué servicio necesito", "cómo sé qué servicio"],
+    response: "Te guiamos según tu objetivo: ventas, automatización o presencia online.",
+  },
+  {
+    keywords: ["sistema de membresías", "membresías", "sistema membresías"],
+    response: "Sí, con control de pagos y acceso por niveles.",
+  },
+  {
+    keywords: ["aplicaciones tipo uber", "app tipo rappi", "app como uber"],
+    response: "Sí, dependiendo del alcance y presupuesto.",
+  },
+  {
+    keywords: ["mejorar velocidad carga", "optimizar velocidad", "velocidad de carga web"],
+    response: "Sí, optimizamos código, imágenes y hosting.",
+  },
+  {
+    keywords: ["hosting y dominio", "ofrecen hosting", "dominio y hosting"],
+    response: "Sí, con precios preferenciales.",
+  },
+  {
+    keywords: ["migrar web actual", "migración web", "migrar mi web"],
+    response: "Sí, migramos a un servidor seguro.",
+  },
+  {
+    keywords: ["ofrecen garantías", "garantía", "tienen garantía"],
+    response: "Sí, entregamos garantía por funcionamiento del desarrollo.",
+  },
+  {
+    keywords: ["se cae mi página", "página caída", "qué pasa si cae"],
+    response: "Nuestro soporte puede restaurarla rápidamente.",
+  },
+  {
+    keywords: ["landing pages campañas", "landing page campaña", "landing para campaña"],
+    response: "Sí, orientadas a ventas y conversión.",
+  },
+  {
+    keywords: ["análisis ventas por ia", "análisis ventas ia", "ventas con ia"],
+    response: "Sí, identificamos patrones, predicciones y recomendaciones.",
+  },
+  {
+    keywords: ["integrar whatsapp tienda", "whatsapp con tienda online", "whatsapp tienda"],
+    response: "Sí, carrito, pedidos y notificaciones automáticas.",
+  },
+  {
+    keywords: ["cómo controlar servicio", "controlar servicio", "iniciar servicio", "iniciar"],
+    response: "Solo envíanos un mensaje con la palabra INICIAR y te guiamos.",
+  },
+  {
     keywords: ["atencion", "atención", "otra forma", "whatsapp", "whats app", "contacto whatsapp"],
     response: "Además de este chat, también puedes contactarnos por WhatsApp al número +57 305 866 1668. Estamos disponibles para atenderte y resolver todas tus dudas.",
   },
@@ -249,7 +350,7 @@ const defaultResponse =
   "Gracias por tu mensaje. Somos OsorIA.tech, especialistas en soluciones de IA para empresas. ¿En qué podemos ayudarte específicamente? Puedes preguntarme sobre nuestros servicios, precios, tiempos de entrega y más."
 
 // Función para encontrar la mejor respuesta basada en palabras clave
-function findBestResponse(message: string): string {
+export function findBestResponse(message: string): string {
   const lowerMessage = message.toLowerCase().trim()
 
   // Buscar la mejor coincidencia
@@ -278,23 +379,5 @@ function findBestResponse(message: string): string {
   return defaultResponse
 }
 
-export async function POST(req: Request) {
-  try {
-    const { message, sessionId } = await req.json()
 
-    if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Mensaje inválido" }, { status: 400 })
-    }
 
-    // Buscar la mejor respuesta
-    const response = findBestResponse(message)
-
-    // Simular un pequeño retraso para que parezca que está "pensando"
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    return NextResponse.json({ response })
-  } catch (error) {
-    console.error("Error en la API de chat:", error)
-    return NextResponse.json({ error: "Error al procesar la solicitud" }, { status: 500 })
-  }
-}

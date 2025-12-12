@@ -2,9 +2,9 @@
 
 import { motion, useMotionValue, useSpring } from "framer-motion"
 import { ArrowRight, Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon } from "lucide-react"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Footer } from "@/components/footer"
+import { Footer } from "@/components/Footer"
 import { Preloader } from "@/components/preloader"
 import Image from "next/image"
 
@@ -16,6 +16,7 @@ import RainingLetters from "@/components/raining-letters"
 import { ContactForm } from "@/components/contact-form"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ChatBot } from "@/components/chat-bot"
+import { SpeedDial } from "@/components/speed-dial"
 
 const blink = {
   "0%, 100%": { opacity: 1 },
@@ -27,6 +28,7 @@ export default function Home() {
   const targetRef = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
   const gridX = useSpring(mouseX, {
     stiffness: 50,
@@ -375,7 +377,8 @@ export default function Home() {
           </motion.div>
         </section>
 
-        <ChatBot />
+        <SpeedDial onChatOpen={() => setIsChatOpen(true)} />
+        <ChatBot isOpenExternal={isChatOpen} onOpenChange={setIsChatOpen} showFloatingButton={false} />
         <Footer />
       </div>
     </div>

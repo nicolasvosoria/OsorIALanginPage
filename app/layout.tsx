@@ -9,9 +9,21 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
+  title: "OsorIa",
+  description: "OsorIA.tech - Soluciones de inteligencia artificial para empresas",
   generator: "v0.dev",
+  icons: {
+    icon: [
+      {
+        url: "/images/Favicone-negra.png",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/images/Favicone-blanca.png",
+        media: "(prefers-color-scheme: light)",
+      },
+    ],
+  },
 }
 
 export default function RootLayout({

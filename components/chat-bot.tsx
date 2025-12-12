@@ -15,8 +15,22 @@ type Message = {
   content: string
 }
 
-export function ChatBot() {
-  const [isOpen, setIsOpen] = useState(false)
+interface ChatBotProps {
+  isOpenExternal?: boolean
+  onOpenChange?: (open: boolean) => void
+  showFloatingButton?: boolean
+}
+
+export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = true }: ChatBotProps) {
+  const [isOpenInternal, setIsOpenInternal] = useState(false)
+  const isOpen = isOpenExternal !== undefined ? isOpenExternal : isOpenInternal
+  const setIsOpen = (open: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(open)
+    } else {
+      setIsOpenInternal(open)
+    }
+  }
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -129,21 +143,23 @@ export function ChatBot() {
 
   return (
     <>
-      {/* Floating Button */}
-      <motion.div
-        className="fixed bottom-6 right-6 z-50"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 2, type: "spring", stiffness: 260, damping: 20 }}
-      >
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-white text-black hover:bg-gray-100 shadow-lg border-2 border-gray-200 transition-all duration-300 hover:scale-110"
-          size="lg"
+      {/* Floating Button - Solo se muestra si showFloatingButton es true */}
+      {showFloatingButton && (
+        <motion.div
+          className="fixed bottom-6 right-6 z-50"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 2, type: "spring", stiffness: 260, damping: 20 }}
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
-        </Button>
-      </motion.div>
+          <Button
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-14 h-14 rounded-full bg-white text-black hover:bg-gray-100 shadow-lg border-2 border-gray-200 transition-all duration-300 hover:scale-110"
+            size="lg"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
+          </Button>
+        </motion.div>
+      )}
 
       {/* Chat Window */}
       <AnimatePresence>
@@ -158,14 +174,24 @@ export function ChatBot() {
             <Card className="bg-black/90 backdrop-blur-xl border-gray-600 text-white shadow-2xl">
               {/* Header */}
               <div className="p-4 border-b border-gray-600">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-black" />
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-black" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Asistente OsorIA</h3>
+                      <p className="text-xs text-gray-400">Asistente Virtual</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold">Asistente OsorIA</h3>
-                    <p className="text-xs text-gray-400">Asistente Virtual</p>
-                  </div>
+                  <Button
+                    onClick={() => setIsOpen(false)}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-white hover:bg-gray-700 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
 
