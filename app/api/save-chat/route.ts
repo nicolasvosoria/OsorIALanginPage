@@ -1,13 +1,24 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
-// Crear cliente de Supabase
-const supabaseUrl = process.env.SUPABASE_URL || ""
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ""
-const supabase = createClient(supabaseUrl, supabaseKey)
-
 export async function POST(req: Request) {
   try {
+    // Obtener variables de entorno
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ""
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ""
+
+    // Validar que las variables estén configuradas
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("❌ Variables de entorno de Supabase no configuradas")
+      return NextResponse.json(
+        { error: "Error de configuración del servidor" },
+        { status: 500 }
+      )
+    }
+
+    // Crear cliente de Supabase
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
     const { sessionId, role, content } = await req.json()
 
     // Validar datos
@@ -25,13 +36,27 @@ export async function POST(req: Request) {
     ])
 
     if (error) {
-      console.error("Error al guardar en Supabase:", error)
-      return NextResponse.json({ error: "Error al guardar el mensaje" }, { status: 500 })
+      console.error("❌ Error al guardar en Supabase:", error)
+      
+      // Mensaje más específico si la tabla no existe
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.error("❌ La tabla 'chat_conversations' no existe en Supabase")
+        console.error("📋 Ejecuta el script SQL en migrations/chat_conversations.sql en tu proyecto de Supabase")
+        return NextResponse.json({ 
+          error: "La tabla de conversaciones no existe. Por favor, crea la tabla en Supabase.",
+          hint: "Ejecuta el script SQL en migrations/chat_conversations.sql"
+        }, { status: 500 })
+      }
+      
+      return NextResponse.json({ 
+        error: "Error al guardar el mensaje",
+        details: error.message 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error("Error en la API de guardado:", error)
+    console.error("❌ Error en la API de guardado:", error)
     return NextResponse.json({ error: "Error al procesar la solicitud" }, { status: 500 })
   }
 }
