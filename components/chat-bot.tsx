@@ -356,20 +356,20 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
               Podemos enviarte un resumen de tu conversación directamente por WhatsApp para que lo tengas a mano.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-2 sm:gap-0">
+          <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+            <Button
+              onClick={handleSendToWhatsApp}
+              className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 order-1"
+            >
+              <MessageCircle className="w-4 h-4 mr-2 text-white" />
+              <span className="text-white">Enviar por WhatsApp</span>
+            </Button>
             <Button
               variant="outline"
               onClick={() => setShowWhatsAppDialog(false)}
-              className="border-gray-600 text-white hover:bg-gray-800"
+              className="w-full sm:w-auto border-gray-500 bg-transparent text-white hover:bg-gray-800 hover:text-white hover:border-gray-400 transition-all duration-300 order-2"
             >
-              No, gracias
-            </Button>
-            <Button
-              onClick={handleSendToWhatsApp}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Enviar por WhatsApp
+              <span className="text-white">No, gracias</span>
             </Button>
           </DialogFooter>
         </DialogContent>
