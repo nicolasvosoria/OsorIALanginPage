@@ -54,6 +54,39 @@ export async function POST(req: Request) {
       }, { status: 500 })
     }
 
+    // Actualizar o crear la sesión en chat_sessions
+    try {
+      // Verificar si la sesión existe
+      const { data: existingSession } = await supabase
+        .from("chat_sessions")
+        .select("id, message_count")
+        .eq("id", sessionId)
+        .single()
+
+      if (existingSession) {
+        // Actualizar sesión existente
+        await supabase
+          .from("chat_sessions")
+          .update({
+            message_count: (existingSession.message_count || 0) + 1,
+            last_message_at: new Date().toISOString(),
+          })
+          .eq("id", sessionId)
+      } else {
+        // Crear nueva sesión
+        await supabase.from("chat_sessions").insert([
+          {
+            id: sessionId,
+            message_count: 1,
+            last_message_at: new Date().toISOString(),
+          },
+        ])
+      }
+    } catch (sessionError) {
+      // Si la tabla chat_sessions no existe, solo loguear el error pero no fallar
+      console.warn("⚠️ No se pudo actualizar chat_sessions (puede que la tabla no exista aún):", sessionError)
+    }
+
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error("❌ Error en la API de guardado:", error)
