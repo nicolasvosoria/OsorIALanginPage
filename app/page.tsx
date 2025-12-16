@@ -4,7 +4,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion"
 import { ArrowRight, Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Footer } from "@/components/footer"
+import { Footer } from "@/components/Footer"
 import { Preloader } from "@/components/preloader"
 import Image from "next/image"
 

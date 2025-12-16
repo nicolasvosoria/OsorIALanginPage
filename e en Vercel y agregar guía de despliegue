@@ -1,0 +1,87 @@
+[1mdiff --git a/components/Footer.tsx b/components/Footer.tsx[m
+[1mindex aa197d7..057a14e 100644[m
+[1m--- a/components/Footer.tsx[m
+[1m+++ b/components/Footer.tsx[m
+[36m@@ -1,11 +1,5 @@[m
+ import Link from "next/link"[m
+ import { Linkedin, Instagram } from "lucide-react"[m
+[31m-import {[m
+[31m-  Tooltip,[m
+[31m-  TooltipContent,[m
+[31m-  TooltipProvider,[m
+[31m-  TooltipTrigger,[m
+[31m-} from "@/components/ui/tooltip"[m
+ [m
+ export function Footer() {[m
+   return ([m
+[36m@@ -25,6 +19,9 @@[m [mexport function Footer() {[m
+           <Link href="#" className="hover:text-white transition-colors">[m
+             Privacidad[m
+           </Link>[m
+[32m+[m[32m          <Link href="#" className="hover:text-white transition-colors">[m
+[32m+[m[32m            Contacto[m
+[32m+[m[32m          </Link>[m
+         </div>[m
+ [m
+         <div className="flex gap-4">[m
+[36m@@ -37,25 +34,41 @@[m [mexport function Footer() {[m
+             <Linkedin className="w-6 h-6" />[m
+             <span className="sr-only">LinkedIn</span>[m
+           </Link>[m
+[31m-          <TooltipProvider>[m
+[31m-            <Tooltip>[m
+[31m-              <TooltipTrigger asChild>[m
+[31m-                <Link[m
+[31m-                  href="https://www.instagram.com/osoriatech"[m
+[31m-                  target="_blank"[m
+[31m-                  rel="noopener noreferrer"[m
+[31m-                  className="text-gray-400 hover:text-white transition-colors"[m
+[31m-                >[m
+[31m-                  <Instagram className="w-6 h-6" />[m
+[31m-                  <span className="sr-only">Instagram</span>[m
+[31m-                </Link>[m
+[31m-              </TooltipTrigger>[m
+[31m-              <TooltipContent>[m
+[31m-                <p>Síguenos en nuestras redes sociales</p>[m
+[31m-              </TooltipContent>[m
+[31m-            </Tooltip>[m
+[31m-          </TooltipProvider>[m
+[31m-          [m
+[32m+[m[32m          <Link[m
+[32m+[m[32m            href="https://instagram.com"[m
+[32m+[m[32m            target="_blank"[m
+[32m+[m[32m            rel="noopener noreferrer"[m
+[32m+[m[32m            className="text-gray-400 hover:text-white transition-colors"[m
+[32m+[m[32m          >[m
+[32m+[m[32m            <Instagram className="w-6 h-6" />[m
+[32m+[m[32m            <span className="sr-only">Instagram</span>[m
+[32m+[m[32m          </Link>[m
+[32m+[m[32m          <Link[m
+[32m+[m[32m            href="https://tiktok.com"[m
+[32m+[m[32m            target="_blank"[m
+[32m+[m[32m            rel="noopener noreferrer"[m
+[32m+[m[32m            className="text-gray-400 hover:text-white transition-colors"[m
+[32m+[m[32m          >[m
+[32m+[m[32m            <svg[m
+[32m+[m[32m              xmlns="http://www.w3.org/2000/svg"[m
+[32m+[m[32m              width="24"[m
+[32m+[m[32m              height="24"[m
+[32m+[m[32m              viewBox="0 0 24 24"[m
+[32m+[m[32m              fill="none"[m
+[32m+[m[32m              stroke="currentColor"[m
+[32m+[m[32m              strokeWidth="2"[m
+[32m+[m[32m              strokeLinecap="round"[m
+[32m+[m[32m              strokeLinejoin="round"[m
+[32m+[m[32m              className="w-6 h-6"[m
+[32m+[m[32m            >[m
+[32m+[m[32m              <path d="M9 12a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path>[m
+[32m+[m[32m              <path d="M16 8v8"></path>[m
+[32m+[m[32m              <path d="M12 16v4"></path>[m
+[32m+[m[32m              <path d="M20 12V8h-4"></path>[m
+[32m+[m[32m              <path d="M16 8a4 4 0 0 0-4-4"></path>[m
+[32m+[m[32m            </svg>[m
+[32m+[m[32m            <span className="sr-only">TikTok</span>[m
+[32m+[m[32m          </Link>[m
+         </div>[m
+       </div>[m
+     </footer>[m
