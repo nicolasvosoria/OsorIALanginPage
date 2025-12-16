@@ -36,13 +36,27 @@ export async function POST(req: Request) {
     ])
 
     if (error) {
-      console.error("Error al guardar en Supabase:", error)
-      return NextResponse.json({ error: "Error al guardar el mensaje" }, { status: 500 })
+      console.error("❌ Error al guardar en Supabase:", error)
+      
+      // Mensaje más específico si la tabla no existe
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.error("❌ La tabla 'chat_conversations' no existe en Supabase")
+        console.error("📋 Ejecuta el script SQL en migrations/chat_conversations.sql en tu proyecto de Supabase")
+        return NextResponse.json({ 
+          error: "La tabla de conversaciones no existe. Por favor, crea la tabla en Supabase.",
+          hint: "Ejecuta el script SQL en migrations/chat_conversations.sql"
+        }, { status: 500 })
+      }
+      
+      return NextResponse.json({ 
+        error: "Error al guardar el mensaje",
+        details: error.message 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error("Error en la API de guardado:", error)
+    console.error("❌ Error en la API de guardado:", error)
     return NextResponse.json({ error: "Error al procesar la solicitud" }, { status: 500 })
   }
 }

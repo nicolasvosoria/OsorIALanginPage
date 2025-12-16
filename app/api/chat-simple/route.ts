@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
+import { generateText } from "ai"
+import { deepseek } from "@ai-sdk/deepseek"
+import { openai } from "@ai-sdk/openai"
 
-// Base de datos de preguntas y respuestas
+// Base de datos de preguntas y respuestas (usada como fallback)
 const faqDatabase: Array<{ keywords: string[]; response: string }> = [
   {
     keywords: ["qué servicios", "servicios ofrecen", "que ofrecen", "servicios tienen"],
@@ -278,21 +281,217 @@ function findBestResponse(message: string): string {
   return defaultResponse
 }
 
+// Función para obtener contexto relevante del FAQ basado en el mensaje
+function getRelevantFAQContext(message: string, maxItems: number = 5): string {
+  const lowerMessage = message.toLowerCase().trim()
+  
+  // Calcular relevancia de cada FAQ
+  const faqWithScores = faqDatabase.map((faq) => {
+    let score = 0
+    for (const keyword of faq.keywords) {
+      if (lowerMessage.includes(keyword.toLowerCase())) {
+        score += 1
+      }
+    }
+    return { faq, score }
+  })
+
+  // Ordenar por relevancia y tomar los más relevantes
+  const relevantFAQs = faqWithScores
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxItems)
+    .map((item) => item.faq)
+
+  // Si no hay FAQs relevantes, tomar algunos generales
+  if (relevantFAQs.length === 0) {
+    return faqDatabase.slice(0, 5).map((faq) => {
+      const question = faq.keywords[0]
+      return `P: ${question}\nR: ${faq.response}`
+    }).join('\n\n')
+  }
+
+  // Formatear como contexto
+  return relevantFAQs.map((faq) => {
+    const question = faq.keywords[0]
+    return `P: ${question}\nR: ${faq.response}`
+  }).join('\n\n')
+}
+
 export async function POST(req: Request) {
   try {
-    const { message, sessionId } = await req.json()
+    const { message, sessionId, messages: conversationHistory } = await req.json()
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Mensaje inválido" }, { status: 400 })
     }
 
-    // Buscar la mejor respuesta
-    const response = findBestResponse(message)
+    // Verificar si hay API keys configuradas
+    const deepseekApiKey = process.env.DEEPSEEK_API_KEY
+    const openaiApiKey = process.env.OPENAI_API_KEY
 
-    // Simular un pequeño retraso para que parezca que está "pensando"
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    console.log("🔍 Debug - DEEPSEEK_API_KEY configurada:", !!deepseekApiKey)
+    console.log("🔍 Debug - OPENAI_API_KEY configurada:", !!openaiApiKey)
 
-    return NextResponse.json({ response })
+    // Construir el historial de conversación
+    const history = conversationHistory || []
+    
+    // Filtrar y formatear el historial correctamente
+    // Excluir mensajes vacíos o inválidos
+    const formattedHistory = history
+      .filter((msg: any) => msg && msg.role && msg.content && typeof msg.content === "string" && msg.content.trim().length > 0)
+      .map((msg: any) => ({
+        role: msg.role === "user" ? "user" : "assistant",
+        content: msg.content.trim(),
+      }))
+    
+    // Verificar si el último mensaje del historial es el mensaje actual
+    const lastMessage = formattedHistory[formattedHistory.length - 1]
+    const isLastMessageCurrent = lastMessage && lastMessage.role === "user" && lastMessage.content === message.trim()
+    
+    // Construir el array de mensajes final
+    const allMessages = isLastMessageCurrent
+      ? formattedHistory
+      : [
+          ...formattedHistory,
+          {
+            role: "user" as const,
+            content: message.trim(),
+          },
+        ]
+    
+    // Limitar el historial a los últimos 10 mensajes para evitar tokens excesivos
+    const limitedMessages = allMessages.slice(-10)
+    
+    console.log("💬 Historial de mensajes (últimos 10):", JSON.stringify(limitedMessages, null, 2))
+    console.log("📝 Mensaje actual:", message)
+
+    // Intentar usar IA real
+    try {
+      let response: string
+
+      // Obtener contexto relevante del FAQ
+      const faqContext = getRelevantFAQContext(message, 8)
+      console.log("📚 Contexto FAQ extraído:", faqContext.substring(0, 200) + "...")
+
+      // Prioridad 1: DeepSeek si está configurado
+      if (deepseekApiKey) {
+        console.log("🤖 Usando DeepSeek para generar respuesta...")
+        console.log("🔑 API Key presente (primeros 20 chars):", deepseekApiKey.substring(0, 20) + "...")
+        console.log("📝 Mensaje del usuario:", message.substring(0, 100))
+        console.log("📊 Número de mensajes en historial:", limitedMessages.length)
+        try {
+          // El SDK de DeepSeek detecta automáticamente DEEPSEEK_API_KEY de las variables de entorno
+          // No necesitamos pasarla explícitamente
+          const result = await generateText({
+            model: deepseek("deepseek-chat"),
+            messages: [
+              {
+                role: "system",
+                content: `Eres un asistente especializado de OsorIA.tech, una empresa colombiana de desarrollo de soluciones con inteligencia artificial.
+
+Información sobre OsorIA.tech:
+- Desarrollamos soluciones personalizadas con IA para empresas
+- Automatizamos procesos operativos
+- Realizamos análisis predictivo de datos
+- Creamos páginas web personalizadas
+- Identificamos oportunidades tecnológicas y estratégicas
+- Integramos soluciones digitales
+- Ofrecemos servicios de desarrollo web, aplicaciones móviles, e-commerce, análisis de datos, automatización, chatbots, y más
+
+CONTEXTO DE PREGUNTAS FRECUENTES (usa esta información para responder con precisión):
+${faqContext}
+
+INSTRUCCIONES:
+- Responde de manera amigable, profesional y en español
+- Usa la información del contexto de FAQ cuando sea relevante
+- Mantén las respuestas concisas pero informativas (máximo 3-4 párrafos)
+- Si te preguntan sobre servicios específicos, proporciona detalles relevantes basándote en el contexto
+- Si no sabes algo específico, sugiere contactar por WhatsApp al +57 305 866 1668
+- Adapta las respuestas del FAQ a un lenguaje natural y conversacional
+- No inventes información que no esté en el contexto
+- Responde directamente a la pregunta del usuario sin repetir la pregunta`,
+              },
+              ...limitedMessages,
+            ],
+            maxTokens: 500,
+            temperature: 0.7,
+          })
+
+          response = result.text?.trim() || ""
+          if (!response) {
+            console.error("⚠️ La respuesta de DeepSeek está vacía, usando fallback")
+            response = findBestResponse(message)
+          } else {
+            console.log("✅ Respuesta generada por DeepSeek (longitud:", response.length, "):", response.substring(0, 150) + "...")
+          }
+        } catch (deepseekError: any) {
+          console.error("❌ Error específico de DeepSeek:", deepseekError)
+          console.error("❌ Detalles del error:", JSON.stringify(deepseekError, null, 2))
+          // Si es un error de autenticación o API, no intentar fallback
+          if (deepseekError?.cause?.status === 401 || deepseekError?.cause?.status === 403) {
+            throw new Error("Error de autenticación con DeepSeek. Verifica tu API key.")
+          }
+          throw deepseekError
+        }
+      }
+      // Prioridad 2: OpenAI si está configurado
+      else if (openaiApiKey) {
+        console.log("🤖 Usando OpenAI para generar respuesta...")
+        const result = await generateText({
+          model: openai("gpt-4o-mini"),
+          messages: [
+            {
+              role: "system",
+              content: `Eres un asistente especializado de OsorIA.tech, una empresa colombiana de desarrollo de soluciones con inteligencia artificial.
+
+Información sobre OsorIA.tech:
+- Desarrollamos soluciones personalizadas con IA para empresas
+- Automatizamos procesos operativos
+- Realizamos análisis predictivo de datos
+- Creamos páginas web personalizadas
+- Identificamos oportunidades tecnológicas y estratégicas
+- Integramos soluciones digitales
+- Ofrecemos servicios de desarrollo web, aplicaciones móviles, e-commerce, análisis de datos, automatización, chatbots, y más
+
+CONTEXTO DE PREGUNTAS FRECUENTES (usa esta información para responder con precisión):
+${faqContext}
+
+INSTRUCCIONES:
+- Responde de manera amigable, profesional y en español
+- Usa la información del contexto de FAQ cuando sea relevante
+- Mantén las respuestas concisas pero informativas
+- Si te preguntan sobre servicios específicos, proporciona detalles relevantes basándote en el contexto
+- Si no sabes algo específico, sugiere contactar por WhatsApp al +57 305 866 1668
+- Adapta las respuestas del FAQ a un lenguaje natural y conversacional
+- Responde directamente a la pregunta del usuario sin repetir la pregunta`,
+            },
+            ...limitedMessages,
+          ],
+          maxTokens: 500,
+        })
+
+        response = result.text?.trim() || ""
+        if (!response) {
+          console.error("⚠️ La respuesta de OpenAI está vacía, usando fallback")
+          response = findBestResponse(message)
+        } else {
+          console.log("✅ Respuesta generada por OpenAI (longitud:", response.length, "):", response.substring(0, 150) + "...")
+        }
+      }
+      // Fallback: usar FAQ si no hay API keys
+      else {
+        console.log("📋 Usando FAQ como fallback (no hay API keys configuradas)")
+        response = findBestResponse(message)
+      }
+
+      return NextResponse.json({ response })
+    } catch (aiError) {
+      console.error("Error al usar IA:", aiError)
+      // Si falla la IA, usar el FAQ como fallback
+      const fallbackResponse = findBestResponse(message)
+      return NextResponse.json({ response: fallbackResponse })
+    }
   } catch (error) {
     console.error("Error en la API de chat:", error)
     return NextResponse.json({ error: "Error al procesar la solicitud" }, { status: 500 })

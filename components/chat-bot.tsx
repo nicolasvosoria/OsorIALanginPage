@@ -4,10 +4,18 @@ import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Bot, X, Send } from "lucide-react"
+import { Bot, X, Send, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 type Message = {
   id: string
@@ -43,6 +51,8 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [sessionId, setSessionId] = useState("")
+  const [showWhatsAppDialog, setShowWhatsAppDialog] = useState(false)
+  const [previousWasOpen, setPreviousWasOpen] = useState(false)
 
   // Generar un ID de sesión único al cargar el componente
   useEffect(() => {
@@ -55,6 +65,21 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }, [messages])
+
+  // Detectar cuando se cierra el chatbot y mostrar diálogo si hubo conversación
+  useEffect(() => {
+    if (previousWasOpen && !isOpen) {
+      // Verificar si hubo una conversación real (más que solo el mensaje de bienvenida)
+      const userMessages = messages.filter((msg) => msg.role === "user")
+      if (userMessages.length > 0) {
+        // Esperar un momento antes de mostrar el diálogo
+        setTimeout(() => {
+          setShowWhatsAppDialog(true)
+        }, 500)
+      }
+    }
+    setPreviousWasOpen(isOpen)
+  }, [isOpen, previousWasOpen, messages])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
@@ -70,7 +95,10 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
       role: "user",
       content: input.trim(),
     }
-    setMessages((prev) => [...prev, userMessage])
+    
+    // Crear el nuevo array de mensajes incluyendo el mensaje actual
+    const updatedMessages = [...messages, userMessage]
+    setMessages(updatedMessages)
     setInput("")
     setIsLoading(true)
 
@@ -78,7 +106,15 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
       // Guardar mensaje del usuario en Supabase
       await saveMessageToSupabase(userMessage, sessionId)
 
-      // Enviar mensaje a la API
+      // Enviar mensaje a la API con historial de conversación
+      // Filtrar el mensaje de bienvenida del historial para evitar confusión
+      const messagesToSend = updatedMessages
+        .filter((msg) => msg.id !== "welcome") // Excluir mensaje de bienvenida
+        .map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        }))
+
       const response = await fetch("/api/chat-simple", {
         method: "POST",
         headers: {
@@ -87,34 +123,45 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
         body: JSON.stringify({
           message: userMessage.content,
           sessionId,
+          messages: messagesToSend,
         }),
       })
 
       if (!response.ok) {
-        throw new Error("Error en la respuesta del servidor")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "Error en la respuesta del servidor")
       }
 
       const data = await response.json()
+
+      // Validar que la respuesta tenga contenido
+      if (!data.response || typeof data.response !== "string") {
+        throw new Error("La respuesta del servidor no es válida")
+      }
 
       // Agregar respuesta del asistente
       const assistantMessage: Message = {
         id: `assistant_${Date.now()}`,
         role: "assistant",
-        content: data.response,
+        content: data.response.trim(),
       }
       setMessages((prev) => [...prev, assistantMessage])
 
       // Guardar respuesta del asistente en Supabase
       await saveMessageToSupabase(assistantMessage, sessionId)
     } catch (error) {
-      console.error("Error al enviar mensaje:", error)
-      // Mensaje de error
+      console.error("❌ Error al enviar mensaje:", error)
+      // Mensaje de error más específico
+      const errorMessage = error instanceof Error 
+        ? `Lo siento, ha ocurrido un error: ${error.message}. Por favor, intenta de nuevo.`
+        : "Lo siento, ha ocurrido un error. Por favor, intenta de nuevo más tarde."
+      
       setMessages((prev) => [
         ...prev,
         {
           id: `error_${Date.now()}`,
           role: "assistant",
-          content: "Lo siento, ha ocurrido un error. Por favor, intenta de nuevo más tarde.",
+          content: errorMessage,
         },
       ])
     } finally {
@@ -139,6 +186,48 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
     } catch (error) {
       console.error("Error al guardar mensaje en Supabase:", error)
     }
+  }
+
+  // Función para generar resumen de la conversación
+  const generateConversationSummary = (): string => {
+    const userMessages = messages.filter((msg) => msg.role === "user")
+    const assistantMessages = messages.filter((msg) => msg.role === "assistant")
+
+    let summary = "📋 Resumen de conversación con OsorIA.tech\n\n"
+    
+    // Agregar preguntas del usuario
+    if (userMessages.length > 0) {
+      summary += "Preguntas realizadas:\n"
+      userMessages.forEach((msg, index) => {
+        summary += `${index + 1}. ${msg.content}\n`
+      })
+      summary += "\n"
+    }
+
+    // Agregar respuestas clave
+    if (assistantMessages.length > 0) {
+      summary += "Información proporcionada:\n"
+      assistantMessages.slice(0, 3).forEach((msg, index) => {
+        if (msg.id !== "welcome") {
+          summary += `• ${msg.content.substring(0, 150)}${msg.content.length > 150 ? "..." : ""}\n\n`
+        }
+      })
+    }
+
+    summary += "\n💬 Para más información, contáctanos directamente por WhatsApp."
+    
+    return summary
+  }
+
+  // Función para enviar resumen por WhatsApp
+  const handleSendToWhatsApp = () => {
+    const summary = generateConversationSummary()
+    const whatsappNumber = "573058661668" // Número de WhatsApp de OsorIA.tech
+    const message = encodeURIComponent(summary)
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`
+    
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer")
+    setShowWhatsAppDialog(false)
   }
 
   return (
@@ -254,6 +343,37 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Diálogo para enviar resumen por WhatsApp */}
+      <Dialog open={showWhatsAppDialog} onOpenChange={setShowWhatsAppDialog}>
+        <DialogContent className="bg-black/95 border-gray-600 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <MessageCircle className="w-5 h-5" />
+              ¿Quieres recibir un resumen de la conversación?
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Podemos enviarte un resumen de tu conversación directamente por WhatsApp para que lo tengas a mano.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+            <Button
+              onClick={handleSendToWhatsApp}
+              className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 order-1"
+            >
+              <MessageCircle className="w-4 h-4 mr-2 text-white" />
+              <span className="text-white">Enviar por WhatsApp</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowWhatsAppDialog(false)}
+              className="w-full sm:w-auto border-gray-500 bg-transparent text-white hover:bg-gray-800 hover:text-white hover:border-gray-400 transition-all duration-300 order-2"
+            >
+              <span className="text-white">No, gracias</span>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
