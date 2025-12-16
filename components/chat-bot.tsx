@@ -17,6 +17,27 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
+// Función para convertir markdown básico a HTML y renderizar emojis
+function formatMessage(content: string): string {
+  // Escapar HTML existente para seguridad
+  let formatted = content
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  
+  // Convertir **texto** a <strong>texto</strong> (negrita) - procesar primero
+  formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  
+  // Convertir *texto* a <em>texto</em> (cursiva) - solo si no tiene ** antes
+  // Usar un enfoque más simple: buscar asteriscos simples que no estén dentro de negritas
+  formatted = formatted.replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, '<em>$1</em>')
+  
+  // Convertir saltos de línea a <br>
+  formatted = formatted.replace(/\n/g, '<br />')
+  
+  return formatted
+}
+
 type Message = {
   id: string
   role: "user" | "assistant"
@@ -139,16 +160,33 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
         throw new Error("La respuesta del servidor no es válida")
       }
 
+      let responseContent = data.response.trim()
+      
+      // Detectar si hay que redirigir a WhatsApp
+      const shouldRedirect = responseContent.includes("[REDIRECT_WHATSAPP]")
+      
+      // Remover el marcador de la respuesta mostrada
+      if (shouldRedirect) {
+        responseContent = responseContent.replace(/\[REDIRECT_WHATSAPP\]/g, "").trim()
+      }
+
       // Agregar respuesta del asistente
       const assistantMessage: Message = {
         id: `assistant_${Date.now()}`,
         role: "assistant",
-        content: data.response.trim(),
+        content: responseContent,
       }
       setMessages((prev) => [...prev, assistantMessage])
 
       // Guardar respuesta del asistente en Supabase
       await saveMessageToSupabase(assistantMessage, sessionId)
+
+      // Redirigir a WhatsApp si es necesario
+      if (shouldRedirect) {
+        setTimeout(() => {
+          redirectToWhatsApp()
+        }, 1500) // Esperar 1.5 segundos para que el usuario vea el mensaje
+      }
     } catch (error) {
       console.error("❌ Error al enviar mensaje:", error)
       // Mensaje de error más específico
@@ -219,12 +257,40 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
     return summary
   }
 
+  // Función para generar resumen corto de la conversación para WhatsApp
+  const generateShortSummary = (): string => {
+    const userMessages = messages.filter((msg) => msg.role === "user")
+    
+    let summary = "Hola, vengo desde la página web de OsorIA.tech. "
+    
+    if (userMessages.length > 0) {
+      summary += "Me interesa:\n\n"
+      userMessages.slice(-3).forEach((msg, index) => {
+        summary += `${index + 1}. ${msg.content}\n`
+      })
+    }
+    
+    summary += "\nMe gustaría recibir más información y cotización."
+    
+    return summary
+  }
+
+  // Función para redirigir a WhatsApp con resumen de conversación
+  const redirectToWhatsApp = () => {
+    const summary = generateShortSummary()
+    const whatsappNumber = "3058661668" // Número de WhatsApp de OsorIA.tech
+    const message = encodeURIComponent(summary)
+    const whatsappUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${message}&type=phone_number&app_absent=0`
+    
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer")
+  }
+
   // Función para enviar resumen por WhatsApp
   const handleSendToWhatsApp = () => {
     const summary = generateConversationSummary()
-    const whatsappNumber = "573058661668" // Número de WhatsApp de OsorIA.tech
+    const whatsappNumber = "3058661668" // Número de WhatsApp de OsorIA.tech
     const message = encodeURIComponent(summary)
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`
+    const whatsappUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${message}&type=phone_number&app_absent=0`
     
     window.open(whatsappUrl, "_blank", "noopener,noreferrer")
     setShowWhatsAppDialog(false)
@@ -294,9 +360,12 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
                           ? "bg-white text-black"
                           : "bg-gray-800 text-white border border-gray-600"
                       }`}
-                    >
-                      {message.content}
-                    </div>
+                      dangerouslySetInnerHTML={{
+                        __html: message.role === "assistant" 
+                          ? formatMessage(message.content)
+                          : message.content.replace(/\n/g, '<br />')
+                      }}
+                    />
                   </div>
                 ))}
                 {isLoading && (
