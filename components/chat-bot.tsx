@@ -77,7 +77,10 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
 
   // Generar un ID de sesión único al cargar el componente
   useEffect(() => {
-    setSessionId(`session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`)
+    // ID más simple y corto: timestamp en base36 + 4 caracteres aleatorios
+    const timestamp = Date.now().toString(36)
+    const random = Math.random().toString(36).substring(2, 6)
+    setSessionId(`${timestamp}${random}`)
   }, [])
 
   // Scroll al último mensaje
@@ -231,7 +234,9 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
     const userMessages = messages.filter((msg) => msg.role === "user")
     const assistantMessages = messages.filter((msg) => msg.role === "assistant")
 
-    let summary = "📋 Resumen de conversación con OsorIA.tech\n\n"
+    // ID de conversación al inicio
+    let summary = `🆔 ID de Conversación: ${sessionId}\n\n`
+    summary += "📋 Resumen de conversación con OsorIA.tech\n\n"
     
     // Agregar preguntas del usuario
     if (userMessages.length > 0) {
@@ -260,19 +265,52 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
   // Función para generar resumen corto de la conversación para WhatsApp
   const generateShortSummary = (): string => {
     const userMessages = messages.filter((msg) => msg.role === "user")
+    const assistantMessages = messages.filter((msg) => msg.role === "assistant")
     
-    let summary = "Hola, vengo desde la página web de OsorIA.tech. "
+    // ID de conversación al inicio
+    let summary = `🆔 ID de Conversación: ${sessionId}\n\n`
+    summary += "Hola, vengo desde la página web de OsorIA.tech.\n\n"
     
+    // Resumen completo de la conversación
     if (userMessages.length > 0) {
-      summary += "Me interesa:\n\n"
-      userMessages.slice(-3).forEach((msg, index) => {
+      summary += "📝 Preguntas realizadas:\n"
+      userMessages.forEach((msg, index) => {
         summary += `${index + 1}. ${msg.content}\n`
+      })
+      summary += "\n"
+    }
+
+    if (assistantMessages.length > 0) {
+      summary += "💬 Respuestas proporcionadas:\n"
+      assistantMessages.forEach((msg, index) => {
+        if (msg.id !== "welcome") {
+          // Remover formato markdown para WhatsApp
+          const cleanContent = msg.content.replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1')
+          summary += `${index}. ${cleanContent.substring(0, 200)}${cleanContent.length > 200 ? "..." : ""}\n\n`
+        }
       })
     }
     
-    summary += "\nMe gustaría recibir más información y cotización."
+    summary += "\n✅ Me gustaría recibir más información y cotización."
     
     return summary
+  }
+
+  // Función para marcar que se envió por WhatsApp
+  const markWhatsAppSent = async () => {
+    try {
+      await fetch("/api/mark-whatsapp-sent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+        }),
+      })
+    } catch (error) {
+      console.error("Error al marcar WhatsApp como enviado:", error)
+    }
   }
 
   // Función para redirigir a WhatsApp con resumen de conversación
@@ -283,6 +321,8 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
     const whatsappUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${message}&type=phone_number&app_absent=0`
     
     window.open(whatsappUrl, "_blank", "noopener,noreferrer")
+    // Marcar que se envió por WhatsApp
+    markWhatsAppSent()
   }
 
   // Función para enviar resumen por WhatsApp
@@ -294,6 +334,8 @@ export function ChatBot({ isOpenExternal, onOpenChange, showFloatingButton = tru
     
     window.open(whatsappUrl, "_blank", "noopener,noreferrer")
     setShowWhatsAppDialog(false)
+    // Marcar que se envió por WhatsApp
+    markWhatsAppSent()
   }
 
   return (
