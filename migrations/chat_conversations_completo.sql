@@ -52,3 +52,6 @@ WHERE table_schema = 'public'
   AND table_name = 'chat_conversations'
 ORDER BY ordinal_position;
 
+
+
+
