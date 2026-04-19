@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useMotionValue, useSpring } from "framer-motion"
-import { ArrowRight, Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon } from "lucide-react"
+import { Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Footer } from "@/components/Footer"
@@ -9,19 +9,13 @@ import { Preloader } from "@/components/preloader"
 import Image from "next/image"
 
 // Import components
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import TypeWriter from "@/components/type-writer"
 import RainingLetters from "@/components/raining-letters"
 import { ContactForm } from "@/components/contact-form"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ChatBot } from "@/components/chat-bot"
 import { SpeedDial } from "@/components/speed-dial"
-
-const blink = {
-  "0%, 100%": { opacity: 1 },
-  "50%": { opacity: 0 },
-}
+import { LandingHero } from "@/components/landing-hero"
 
 export default function Home() {
   const router = useRouter()
@@ -71,7 +65,6 @@ export default function Home() {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
       },
     },
   }
@@ -87,7 +80,6 @@ export default function Home() {
         <motion.div
           className="absolute inset-0"
           style={{
-            "@keyframes blink": blink,
             backgroundImage: `
               linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
               linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
@@ -102,70 +94,15 @@ export default function Home() {
 
       <div className="relative z-10">
         {/* SECCIÓN 1: Hero Section */}
-        <section
-          id="hero"
-          className="min-h-[75vh] flex flex-col items-center justify-center px-4 py-2 sm:py-4 lg:py-6 relative"
-        >
-          {/* Robot Hand Image - Top Left Corner */}
-          <div className="absolute top-0 left-0 z-20">
-            <Image
-              src="/images/robot-hand.webp"
-              alt="Robot Hand"
-              width={500}
-              height={700}
-              className="hidden lg:block lg:w-[32rem] lg:h-[40rem] xl:w-[36rem] xl:h-[44rem] object-contain opacity-80"
-              priority
-            />
-          </div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="text-center max-w-[90%] sm:max-w-3xl mx-auto space-y-6 sm:space-y-8 relative z-30"
-          >
-            <motion.h1
-              variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight flex flex-wrap items-center justify-center gap-2"
-            >
-              <span className="bg-white text-black px-2">OsorIA</span>
-              <span className="flex items-center">
-                <TypeWriter text=".tech" delay={150} />
-                <span className="w-[2px] h-[1em] bg-white animate-[blink_1s_ease-in-out_infinite]" />
-              </span>
-            </motion.h1>
-            <motion.p
-              variants={itemVariants}
-              className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-2xl mx-auto px-4"
-            >
-              No debes ser experto en IA, nosotros hacemos lo difícil por ti
-            </motion.p>
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto mt-4 sm:mt-8 border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out text-lg px-6 py-4 h-auto bg-transparent"
-                onClick={() => {
-                  const contactSection = document.getElementById("contacto")
-                  if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: "smooth" })
-                  }
-                }}
-              >
-                Contáctanos
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="ghost"
-                className="w-full sm:w-auto mt-4 sm:mt-8 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out text-lg px-6 py-4 h-auto"
-                onClick={() => router.push("/ai-demo")}
-              >
-                Mira lo que puede generar la IA
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </motion.div>
-          </motion.div>
-        </section>
+        <LandingHero
+          onContactClick={() => {
+            const contactSection = document.getElementById("contacto")
+            if (contactSection) {
+              contactSection.scrollIntoView({ behavior: "smooth" })
+            }
+          }}
+          onDemoClick={() => router.push("/ai-demo")}
+        />
 
         {/* Rest of the sections remain unchanged */}
         {/* SECCIÓN 2: Stats Section - Movida a segunda posición */}
