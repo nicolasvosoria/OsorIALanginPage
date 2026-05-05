@@ -141,7 +141,7 @@ const Register = () => {
 
           <p className="text-center text-sm text-muted-foreground pt-2">
             ¿Ya tienes cuenta?{" "}
-            <button type="button" onClick={() => navigate("/")} className="text-primary font-semibold hover:underline">
+            <button type="button" onClick={() => navigate("/login")} className="text-primary font-semibold hover:underline">
               Inicia Sesión
             </button>
           </p>

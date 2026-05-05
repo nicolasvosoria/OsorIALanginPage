@@ -77,7 +77,7 @@ const Profile = () => {
 
   const handleSignOut = () => {
     signOut();
-    navigate("/");
+    navigate("/login");
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
