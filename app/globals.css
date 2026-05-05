@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -90,5 +92,88 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .copa-osoria {
+    --background: 0 0% 97%;
+    --foreground: 160 24% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 24% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 24% 9%;
+    --primary: 158 64% 35%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 160 18% 93%;
+    --secondary-foreground: 160 24% 18%;
+    --muted: 160 12% 92%;
+    --muted-foreground: 160 10% 42%;
+    --accent: 158 64% 35%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 160 12% 84%;
+    --input: 160 12% 84%;
+    --ring: 158 64% 35%;
+    --radius: 0.5rem;
+    --field: 0 0% 94%;
+    --success: 142 76% 42%;
+    --warning: 38 92% 55%;
+    color: hsl(var(--foreground));
+    isolation: isolate;
+    position: relative;
+  }
+
+  .copa-osoria h1,
+  .copa-osoria h2,
+  .copa-osoria h3,
+  .copa-osoria h4,
+  .copa-osoria h5,
+  .copa-osoria h6 {
+    @apply font-display;
+  }
+
+  .copa-osoria::before {
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+    background-size: clamp(20px, 4vw, 40px) clamp(20px, 4vw, 40px);
+    content: "";
+    inset: 0;
+    opacity: 0.9;
+    pointer-events: none;
+    position: fixed;
+    z-index: -2;
+  }
+
+  .copa-osoria::after {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(17, 179, 11, 0.1), transparent 28rem),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.92));
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: fixed;
+    z-index: -1;
+  }
+}
+
+@layer utilities {
+  .copa-osoria .glass-card {
+    @apply bg-white/90 backdrop-blur-md border border-black/10 shadow-2xl;
+  }
+
+  .copa-osoria .gradient-primary {
+    background: linear-gradient(135deg, #20946f, #17745a);
+  }
+
+  .copa-osoria .gradient-accent {
+    background: linear-gradient(135deg, #20946f, #ffffff);
+  }
+
+  .copa-osoria .text-gradient {
+    background: linear-gradient(135deg, #20946f, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
