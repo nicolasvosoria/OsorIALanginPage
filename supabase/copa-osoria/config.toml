@@ -1,0 +1,12 @@
+[api]
+enabled = true
+schemas = ["public", "graphql_public", "copaosoria"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+# Configuración por función (Function Configuration)
+# https://supabase.com/docs/guides/functions/function-configuration
+
+# Requiere autenticación (JWT). API de predicciones de usuario.
+[functions.update_prediction_match]
+verify_jwt = false

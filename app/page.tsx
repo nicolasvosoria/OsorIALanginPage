@@ -1,10 +1,10 @@
 "use client"
 
 import { motion, useMotionValue, useSpring } from "framer-motion"
-import { ArrowRight, Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon } from "lucide-react"
+import { ArrowRight, Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon, Trophy } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Footer } from "@/components/Footer"
+import { Footer } from "@/components/footer"
 import { Preloader } from "@/components/preloader"
 import Image from "next/image"
 
@@ -117,6 +117,17 @@ export default function Home() {
               priority
             />
           </div>
+
+          <Button
+            asChild
+            size="sm"
+            className="absolute right-4 top-4 z-40 border-2 border-white bg-transparent px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:bg-white hover:text-black sm:right-6 lg:right-8"
+          >
+            <a href="/copa-osoria" aria-label="Ingresar a Copa Osoria">
+              Copa Osoria
+              <Trophy className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
 
           <motion.div
             variants={containerVariants}
