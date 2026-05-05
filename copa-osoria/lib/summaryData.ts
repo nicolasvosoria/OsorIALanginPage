@@ -15,15 +15,45 @@ export interface RankingUser {
   points: number;
 }
 
+async function getCopaOsoriaUserIds(): Promise<string[]> {
+  const ids = new Set<string>();
+
+  const { data: predictionUsers } = await supabase
+    .from("user_prediction")
+    .select("user_id")
+    .range(0, 19999);
+
+  for (const row of predictionUsers ?? []) {
+    const id = (row as { user_id?: string }).user_id;
+    if (id) ids.add(id);
+  }
+
+  const { data: groupUsers } = await supabase
+    .from("user_group")
+    .select("user_id")
+    .range(0, 19999);
+
+  for (const row of groupUsers ?? []) {
+    const id = (row as { user_id?: string }).user_id;
+    if (id) ids.add(id);
+  }
+
+  return Array.from(ids);
+}
+
 /**
  * Obtiene el ranking global: todos los usuarios con sus puntos desde user_score.
  * Si user_score está vacío o no existe, devuelve usuarios con 0 pts.
  * Nota: las políticas RLS de la tabla "users" deben permitir leer todos los usuarios para el ranking.
  */
 export async function getRanking(): Promise<RankingUser[]> {
+  const copaUserIds = await getCopaOsoriaUserIds();
+  if (!copaUserIds.length) return [];
+
   const { data: users, error: usersError } = await supabase
     .from("users")
     .select("id, username")
+    .in("id", copaUserIds)
     .order("username")
     .range(0, 4999);
   if (usersError) return [];
@@ -31,7 +61,8 @@ export async function getRanking(): Promise<RankingUser[]> {
 
   const { data: scores, error: scoresError } = await supabase
     .from("user_score")
-    .select("*")
+    .select("user_id, points, total_points, score")
+    .in("user_id", copaUserIds)
     .range(0, 19999);
   if (scoresError) {
     return (users as { id: string; username: string }[]).map((u) => ({
@@ -49,11 +80,13 @@ export async function getRanking(): Promise<RankingUser[]> {
     if (uid) scoreByUser.set(uid, (scoreByUser.get(uid) ?? 0) + pts);
   }
 
-  return (users as { id: string; username: string }[]).map((u) => ({
-    user_id: u.id,
-    username: u.username || "Usuario",
-    points: scoreByUser.get(u.id) ?? 0,
-  })).sort((a, b) => b.points - a.points);
+  return (users as { id: string; username: string }[])
+    .map((u) => ({
+      user_id: u.id,
+      username: u.username || "Usuario",
+      points: scoreByUser.get(u.id) ?? 0,
+    }))
+    .sort((a, b) => b.points - a.points);
 }
 
 /**

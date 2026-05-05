@@ -20,7 +20,7 @@ interface AuthState {
 
 interface AuthContextValue extends AuthState {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signUp: (email: string, password: string, username: string, register_code?: string | null) => Promise<{ error: { message: string } | null }>;
+  signUp: (email: string, password: string, username: string, phone: string) => Promise<{ error: { message: string } | null }>;
   signOut: () => Promise<void>;
   updateProfile: (username: string, email: string) => Promise<{ error: string | null }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: string | null }>;
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signUp = useCallback(
-    async (email: string, password: string, username: string, register_code?: string | null) => {
+    async (email: string, password: string, username: string, phone: string) => {
       setState((s) => ({ ...s, error: null }));
       const { error: authError } = await supabase.auth.signUp({
         email,
@@ -99,7 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: username,
             username,
-            register_code: register_code?.trim() || null,
+            phone: phone.trim(),
+            phone_number: phone.trim(),
           },
         },
       });

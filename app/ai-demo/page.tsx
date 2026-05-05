@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { motion } from "framer-motion"
-import { useRouter } from "next/navigation"
-import { ArrowLeft, Gamepad2, RotateCw, Sparkles, Zap } from "lucide-react"
+import { Gamepad2, MessageCircle, RotateCw, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 type GameKey = "pacman" | "blocks" | "ufos"
@@ -21,6 +20,7 @@ type GameState = {
   score: number
   lives: number
   level: number
+  lines: number
   waveCooldown: number
   direction: Direction
   pacman: { x: number; y: number }
@@ -83,6 +83,7 @@ function initialState(game: GameKey): GameState {
     score: 0,
     lives: 3,
     level: 1,
+    lines: 0,
     waveCooldown: 0,
     direction: "right",
     pacman: { x: 40, y: 64 },
@@ -121,6 +122,32 @@ function drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: n
   ctx.beginPath()
   ctx.roundRect(x, y, w, h, r)
   ctx.fill()
+}
+
+function drawTetrisCell(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string) {
+  ctx.fillStyle = color
+  ctx.fillRect(x + 1, y + 1, size - 2, size - 2)
+  ctx.fillStyle = "rgba(255,255,255,.28)"
+  ctx.fillRect(x + 4, y + 3, size - 8, 3)
+  ctx.strokeStyle = "rgba(0,0,0,.45)"
+  ctx.strokeRect(x + 1, y + 1, size - 2, size - 2)
+}
+
+function drawSidePanel(ctx: CanvasRenderingContext2D, title: string, value: string, x: number, y: number, w: number, h: number) {
+  ctx.fillStyle = "rgba(255,255,255,.82)"
+  ctx.font = "bold 13px monospace"
+  ctx.textAlign = "center"
+  ctx.fillText(title, x + w / 2, y - 7)
+  ctx.fillStyle = "#020403"
+  ctx.fillRect(x, y, w, h)
+  ctx.strokeStyle = "rgba(255,255,255,.72)"
+  ctx.lineWidth = 2
+  ctx.strokeRect(x, y, w, h)
+  ctx.fillStyle = "rgba(255,255,255,.9)"
+  ctx.font = "18px monospace"
+  ctx.fillText(value, x + w / 2, y + h / 2 + 6)
+  ctx.textAlign = "left"
+  ctx.lineWidth = 1
 }
 
 function drawGame(ctx: CanvasRenderingContext2D, state: GameState) {
@@ -202,19 +229,67 @@ function drawGame(ctx: CanvasRenderingContext2D, state: GameState) {
   }
 
   if (state.game === "blocks") {
-    ctx.fillStyle = "rgba(255,255,255,.07)"
-    ctx.fillRect(60, 36, 200, 320)
-    const cell = 20
+    ctx.fillStyle = "#e8e8e8"
+    ctx.fillRect(0, 0, 320, 360)
+    ctx.fillStyle = "#111"
+    ctx.fillRect(98, 8, 124, 28)
+    ctx.strokeStyle = "#8f8f8f"
+    ctx.lineWidth = 3
+    ctx.strokeRect(96, 6, 128, 32)
+    ctx.fillStyle = "#f5f5f5"
+    ctx.font = "bold 12px monospace"
+    ctx.textAlign = "right"
+    ctx.fillText("SCORE", 214, 18)
+    ctx.font = "18px monospace"
+    ctx.fillText(String(state.score), 214, 33)
+    ctx.textAlign = "left"
+
+    drawSidePanel(ctx, "HOLD", "", 4, 86, 55, 44)
+    drawSidePanel(ctx, "LEVEL", String(state.level), 4, 184, 55, 40)
+    drawSidePanel(ctx, "LINES", String(state.lines), 4, 254, 55, 40)
+    drawSidePanel(ctx, "NEXT", "", 261, 86, 55, 118)
+
+    const boardX = 70
+    const boardY = 50
+    const cell = 18
+    const boardW = 10 * cell
+    const boardH = 16 * cell
+
+    ctx.fillStyle = "#d9d9d9"
+    ctx.beginPath(); ctx.roundRect(boardX - 10, boardY - 10, boardW + 20, boardH + 20, 10); ctx.fill()
+    ctx.strokeStyle = "#707070"
+    ctx.lineWidth = 3
+    ctx.strokeRect(boardX - 8, boardY - 8, boardW + 16, boardH + 16)
+    ctx.fillStyle = "#000"
+    ctx.fillRect(boardX, boardY, boardW, boardH)
+
+    ctx.strokeStyle = "#1d1d1d"
+    ctx.lineWidth = 1
+    for (let x = 0; x <= 10; x++) {
+      ctx.beginPath(); ctx.moveTo(boardX + x * cell, boardY); ctx.lineTo(boardX + x * cell, boardY + boardH); ctx.stroke()
+    }
+    for (let y = 0; y <= 16; y++) {
+      ctx.beginPath(); ctx.moveTo(boardX, boardY + y * cell); ctx.lineTo(boardX + boardW, boardY + y * cell); ctx.stroke()
+    }
+
     state.grid.forEach((row, y) => row.forEach((color, x) => {
       if (!color) return
-      ctx.fillStyle = color
-      ctx.fillRect(60 + x * cell + 1, 36 + y * cell + 1, cell - 2, cell - 2)
+      drawTetrisCell(ctx, boardX + x * cell, boardY + y * cell, cell, color)
     }))
     state.block.shape.forEach((row, y) => row.forEach((v, x) => {
       if (!v) return
-      ctx.fillStyle = state.block.color
-      ctx.fillRect(60 + (state.block.x + x) * cell + 1, 36 + (state.block.y + y) * cell + 1, cell - 2, cell - 2)
+      drawTetrisCell(ctx, boardX + (state.block.x + x) * cell, boardY + (state.block.y + y) * cell, cell, state.block.color)
     }))
+
+    const previewX = 276
+    let previewY = 102
+    BLOCK_SHAPES.slice(0, 3).forEach((piece) => {
+      piece.shape.forEach((row, y) => row.forEach((v, x) => {
+        if (v) drawTetrisCell(ctx, previewX + x * 10, previewY + y * 10, 10, piece.color)
+      }))
+      previewY += 34
+    })
+    ctx.lineWidth = 1
   }
 
   ctx.fillStyle = "rgba(255,255,255,.78)"
@@ -256,6 +331,7 @@ function step(state: GameState): GameState {
 
   if (next.game === "ufos") {
     next.bullets = next.bullets.map((b) => ({ ...b, y: b.y - 5 })).filter((b) => b.y > 0)
+    if (next.frame % 12 === 0 && next.ufos.length > 0) next.bullets.push({ x: next.shipX, y: 292 })
     next.enemyBullets = next.enemyBullets.map((b) => ({ ...b, y: b.y + b.speed })).filter((b) => b.y < 350)
     next.explosions = next.explosions.map((e) => ({ ...e, age: e.age + 1 })).filter((e) => e.age < 14)
 
@@ -349,7 +425,11 @@ function step(state: GameState): GameState {
       next.grid = next.grid.filter((row) => row.some((cell) => !cell))
       const cleared = before - next.grid.length
       while (next.grid.length < 16) next.grid.unshift(Array.from({ length: 10 }, () => ""))
-      if (cleared) next.score += cleared * 100
+      if (cleared) {
+        next.score += cleared * 100
+        next.lines += cleared
+        next.level = Math.max(1, Math.floor(next.lines / 5) + 1)
+      }
       next.block = makeBlock()
       if (collides(next.grid, next.block)) {
         next.lives -= 1
@@ -363,8 +443,8 @@ function step(state: GameState): GameState {
 }
 
 export default function AIDemo() {
-  const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const holdIntervalRef = useRef<number | null>(null)
   const [game, setGame] = useState<GameKey>("pacman")
   const [state, setState] = useState<GameState>(() => initialState("pacman"))
 
@@ -411,6 +491,60 @@ export default function AIDemo() {
     })
   }, [])
 
+  const openContact = useCallback(() => {
+    const message = encodeURIComponent("Hola, me gustó IA Arcade. Quiero hacer posible una idea con OsorIA.tech.")
+    window.open(`https://wa.me/3058661668?text=${message}`, "_blank", "noopener,noreferrer")
+  }, [])
+
+  const startTouchControl = useCallback((action: Direction | "fire" | "rotate" | "down", repeat = true) => {
+    if (holdIntervalRef.current) window.clearInterval(holdIntervalRef.current)
+    control(action)
+    if (!repeat) return
+    holdIntervalRef.current = window.setInterval(() => control(action), 130)
+  }, [control])
+
+  const stopTouchControl = useCallback(() => {
+    if (!holdIntervalRef.current) return
+    window.clearInterval(holdIntervalRef.current)
+    holdIntervalRef.current = null
+  }, [])
+
+  useEffect(() => () => stopTouchControl(), [stopTouchControl])
+
+  const handleCanvasPointer = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (game !== "ufos" && game !== "blocks") return
+    event.preventDefault()
+    const rect = event.currentTarget.getBoundingClientRect()
+    const ratioX = 320 / rect.width
+    const x = (event.clientX - rect.left) * ratioX
+
+    if (game === "ufos") {
+      setState((current) => ({ ...current, shipX: Math.max(24, Math.min(296, x)) }))
+      return
+    }
+
+    const gridX = Math.max(0, Math.min(9, Math.floor((x - 60) / 20)))
+    setState((current) => {
+      const next = structuredClone(current) as GameState
+      if (next.game !== "blocks") return next
+      const targetX = Math.max(0, Math.min(10 - next.block.shape[0].length, gridX))
+      if (!collides(next.grid, next.block, targetX - next.block.x, 0)) next.block.x = targetX
+      return next
+    })
+  }, [game])
+
+  const handleCanvasTap = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (game !== "blocks") return
+    event.preventDefault()
+    setState((current) => {
+      const next = structuredClone(current) as GameState
+      if (next.game !== "blocks") return next
+      const rotated = rotate(next.block.shape)
+      if (!collides(next.grid, next.block, 0, 0, rotated)) next.block.shape = rotated
+      return next
+    })
+  }, [game])
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const gameKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " ", "Spacebar"]
@@ -429,39 +563,28 @@ export default function AIDemo() {
   }, [control, game])
 
   return (
-    <div className="min-h-screen overflow-hidden bg-black text-white">
+    <div className="h-[100dvh] overflow-hidden bg-black text-white">
       <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] opacity-70" />
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
-        <Button
-          onClick={() => router.push("/")}
-          className="mb-4 w-fit border border-white/20 bg-white/10 text-white hover:bg-white hover:text-black"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Regresar
-        </Button>
-
+      <div className="relative z-10 mx-auto flex h-[100dvh] w-full max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-5 lg:px-8">
         <motion.header
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="shrink-0 text-center"
         >
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-300/40 bg-emerald-400/10 shadow-[0_0_30px_rgba(16,185,129,.22)]">
-            <Gamepad2 className="h-6 w-6 text-emerald-200" />
+          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-300/40 bg-emerald-400/10 shadow-[0_0_30px_rgba(16,185,129,.22)] sm:h-12 sm:w-12">
+            <Gamepad2 className="h-5 w-5 text-emerald-200 sm:h-6 sm:w-6" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">IA Arcade</h1>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-gray-300 sm:text-base">
-            Un demo liviano para mobile: elegí un juego retro y probá cómo una experiencia simple puede volverse interactiva.
-          </p>
         </motion.header>
 
-        <main className="mt-5 grid flex-1 gap-4 lg:grid-cols-[280px_1fr] lg:items-center">
+        <main className="mt-3 grid min-h-0 flex-1 gap-3 lg:grid-cols-[280px_1fr] lg:items-center">
           <section className="grid grid-cols-3 gap-2 lg:grid-cols-1">
             {GAMES.map((item) => (
               <button
                 key={item.key}
                 type="button"
                 onClick={() => setGame(item.key)}
-                className={`rounded-2xl border p-3 text-left transition-all ${
+                className={`rounded-2xl border px-3 py-2 text-left transition-all sm:p-3 ${
                   game === item.key
                     ? "border-emerald-300 bg-emerald-300 text-black shadow-[0_0_25px_rgba(16,185,129,.35)]"
                     : "border-white/15 bg-white/5 text-white hover:border-emerald-200/70"
@@ -473,8 +596,8 @@ export default function AIDemo() {
             ))}
           </section>
 
-          <section className="rounded-[2rem] border border-white/15 bg-white/[.06] p-3 shadow-2xl backdrop-blur sm:p-5">
-            <div className="mb-3 flex items-center justify-between gap-2 px-1">
+          <section className="min-h-0 rounded-[1.5rem] border border-white/15 bg-white/[.06] p-2 shadow-2xl backdrop-blur sm:rounded-[2rem] sm:p-5">
+            <div className="mb-2 flex items-center justify-between gap-2 px-1 sm:mb-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-emerald-200">{GAMES.find((item) => item.key === game)?.title}</p>
                 <p className="text-sm text-gray-300">Puntos: {state.score} · Vidas: {state.lives}</p>
@@ -482,7 +605,7 @@ export default function AIDemo() {
               <Button
                 type="button"
                 onClick={() => setState(initialState(game))}
-                className="h-9 rounded-full bg-white text-black hover:bg-emerald-200"
+                className="h-8 rounded-full bg-white px-4 text-black hover:bg-emerald-200 sm:h-9"
               >
                 Reiniciar
               </Button>
@@ -492,54 +615,105 @@ export default function AIDemo() {
               ref={canvasRef}
               width={320}
               height={360}
-              className="mx-auto aspect-[8/9] w-full max-w-[360px] touch-none rounded-3xl border border-emerald-300/20 bg-[#07110b] shadow-[0_0_40px_rgba(16,185,129,.18)]"
+              onPointerDown={(event) => {
+                handleCanvasPointer(event)
+                handleCanvasTap(event)
+              }}
+              onPointerMove={handleCanvasPointer}
+              className="mx-auto aspect-[8/9] h-auto max-h-[39dvh] w-full max-w-[360px] touch-none rounded-2xl border border-emerald-300/20 bg-[#07110b] shadow-[0_0_40px_rgba(16,185,129,.18)] sm:max-h-none sm:rounded-3xl"
               aria-label="Juego retro interactivo"
             />
 
-            <Controls game={game} onControl={control} />
+            <Controls game={game} onControlStart={startTouchControl} onControlEnd={stopTouchControl} />
           </section>
         </main>
 
-        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.04] p-4 text-center text-sm text-gray-300">
-          <Sparkles className="mr-2 inline h-4 w-4 text-emerald-200" />
-          Esto corre en el navegador, sin assets pesados y pensado para tocar con el dedo.
-        </div>
+        <button
+          type="button"
+          onClick={openContact}
+          className="mt-2 inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl border border-emerald-300/30 bg-emerald-300 px-4 text-center text-xs font-bold leading-tight text-black shadow-[0_0_25px_rgba(16,185,129,.24)] transition active:scale-95 sm:mt-4 sm:h-12 sm:text-sm"
+        >
+          <MessageCircle className="h-4 w-4 shrink-0" />
+          ¿Te gustó? Contáctanos y hacemos tu idea posible
+        </button>
       </div>
     </div>
   )
 }
 
-function Controls({ game, onControl }: { game: GameKey; onControl: (action: Direction | "fire" | "rotate" | "down") => void }) {
+function Controls({
+  game,
+  onControlStart,
+  onControlEnd,
+}: {
+  game: GameKey
+  onControlStart: (action: Direction | "fire" | "rotate" | "down", repeat?: boolean) => void
+  onControlEnd: () => void
+}) {
+  if (game === "ufos" || game === "blocks") {
+    return (
+      <div className="mt-2 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-center text-xs font-medium text-emerald-100 sm:hidden">
+        {game === "ufos"
+          ? "Deslizá el dedo sobre la pantalla: la nave te sigue y dispara sola."
+          : "Deslizá en la pantalla para mover el bloque. Tocá una vez para rotarlo."}
+      </div>
+    )
+  }
+
+  const upAction = "up"
   return (
-    <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:hidden">
+    <div className="mt-2 flex touch-none select-none items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/25 p-2 sm:hidden">
       <div className="grid grid-cols-3 gap-2">
         <span />
-        <ControlButton label="↑" onClick={() => onControl(game === "blocks" ? "rotate" : "up")} />
+        <ControlButton label="↑" ariaLabel="Arriba" onStart={() => onControlStart(upAction)} onEnd={onControlEnd} />
         <span />
-        <ControlButton label="←" onClick={() => onControl("left")} />
-        <ControlButton label="↓" onClick={() => onControl("down")} />
-        <ControlButton label="→" onClick={() => onControl("right")} />
+        <ControlButton label="←" ariaLabel="Izquierda" onStart={() => onControlStart("left")} onEnd={onControlEnd} />
+        <ControlButton label="↓" ariaLabel="Abajo" onStart={() => onControlStart("down")} onEnd={onControlEnd} />
+        <ControlButton label="→" ariaLabel="Derecha" onStart={() => onControlStart("right")} onEnd={onControlEnd} />
       </div>
-      <div className="h-12 w-px bg-white/10" />
-      {game === "ufos" ? (
-        <ControlButton label={<Zap className="h-5 w-5" />} onClick={() => onControl("fire")} large />
-      ) : game === "blocks" ? (
-        <ControlButton label={<RotateCw className="h-5 w-5" />} onClick={() => onControl("rotate")} large />
-      ) : (
-        <p className="text-xs text-gray-400">Comé todos los puntos</p>
-      )}
+
+      <div className="flex min-w-[72px] justify-end">
+        <div className="max-w-[78px] text-right text-[11px] leading-tight text-gray-400">Mantené presionado</div>
+      </div>
     </div>
   )
 }
 
-function ControlButton({ label, onClick, large = false }: { label: ReactNode; onClick: () => void; large?: boolean }) {
+function ControlButton({
+  label,
+  ariaLabel,
+  onStart,
+  onEnd,
+  large = false,
+}: {
+  label: ReactNode
+  ariaLabel: string
+  onStart: () => void
+  onEnd: () => void
+  large?: boolean
+}) {
   return (
     <button
       type="button"
-      onClick={onClick}
-      className={`${large ? "h-20 w-20" : "h-11 w-11"} touch-none rounded-2xl border border-white/15 bg-white/10 text-lg font-bold text-white active:scale-95 active:bg-emerald-300 active:text-black`}
+      aria-label={ariaLabel}
+      onContextMenu={(event) => event.preventDefault()}
+      onPointerDown={(event) => {
+        event.preventDefault()
+        event.currentTarget.setPointerCapture(event.pointerId)
+        onStart()
+      }}
+      onPointerUp={(event) => {
+        event.preventDefault()
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        }
+        onEnd()
+      }}
+      onPointerCancel={onEnd}
+      onLostPointerCapture={onEnd}
+      className={`${large ? "h-16 w-16" : "h-12 w-12"} flex select-none items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-xl font-bold text-white shadow-inner touch-none active:scale-95 active:bg-emerald-300 active:text-black`}
     >
-      <span className="flex items-center justify-center">{label}</span>
+      {label}
     </button>
   )
 }
