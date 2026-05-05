@@ -21,6 +21,7 @@ import VerificarPuntos from "@/copa-osoria/pages/VerificarPuntos"
 import GroupsList from "@/copa-osoria/pages/groups/GroupsList"
 import GroupDetails from "@/copa-osoria/pages/groups/GroupDetails"
 import GroupJoin from "@/copa-osoria/pages/groups/GroupJoin"
+import UpcomingMatches from "@/copa-osoria/pages/UpcomingMatches"
 
 const queryClient = new QueryClient()
 
@@ -41,6 +42,7 @@ export default function CopaOsoriaApp() {
                   <Route path="/change-password" element={<ChangePassword />} />
                   <Route path="/verificar-puntos" element={<VerificarPuntos />} />
                   <Route path="/predicciones" element={<ProtectedRoute><Predictions /></ProtectedRoute>} />
+                  <Route path="/proximos-partidos" element={<ProtectedRoute><UpcomingMatches /></ProtectedRoute>} />
                   <Route path="/ranking" element={<ProtectedRoute><Rankings /></ProtectedRoute>} />
                   <Route path="/resumen" element={<ProtectedRoute><Summary /></ProtectedRoute>} />
                   <Route path="/perfil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

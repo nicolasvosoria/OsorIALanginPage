@@ -183,12 +183,8 @@ serve(async (req) => {
 
   const nowIso = new Date().toISOString();
 
-  if (existing?.limit_date) {
-    const deadline = new Date(existing.limit_date);
-    if (!Number.isNaN(deadline.getTime()) && Date.now() > deadline.getTime()) {
-      return json(403, { error: "Deadline passed", code: "DEADLINE_PASSED", limit_date: existing.limit_date });
-    }
-  }
+  // Se permite actualizar/registrar predicción incluso después de la hora límite,
+  // para mantener la misma lógica solicitada en frontend.
 
   if (existing?.id) {
     const { data: updated, error: updErr } = await supabaseAdmin

@@ -50,7 +50,6 @@ function getEmptyMatchesMessage(competition: Competition): string {
   return `No hay partidos de ${label} en las próximas fechas.`;
 }
 
-import { isPredictionClosed } from "@/copa-osoria/lib/predictionDeadline";
 import { getCompetitionPhaseId, type CompetitionKey, type PhaseKey } from "@/copa-osoria/lib/competitionPhase";
 
 /** Solo mostramos partidos de los primeros 3 días (11, 12 y 13 Jun 2026). */
@@ -106,6 +105,7 @@ const Predictions = () => {
   const [scoresByMatchId, setScoresByMatchId] = useState<Record<string, number>>({});
   /** Total de puntos del usuario desde user_score. */
   const [totalPointsFromDb, setTotalPointsFromDb] = useState<number>(0);
+  const [recentlySavedMatchId, setRecentlySavedMatchId] = useState<string | null>(null);
 
   const setPredictionForMatch = useCallback((matchId: string, field: "home" | "away", value: string) => {
     lastChangedMatchIdRef.current = matchId;
@@ -167,7 +167,12 @@ const Predictions = () => {
     };
     const t = setTimeout(() => {
       lastChangedMatchIdRef.current = null;
-      saveOnePrediction(item);
+      saveOnePrediction(item).then((res) => {
+        if (!res.error) {
+          setRecentlySavedMatchId(match.id);
+          window.setTimeout(() => setRecentlySavedMatchId((current) => (current === match.id ? null : current)), 2200);
+        }
+      });
     }, SAVE_DEBOUNCE_MS);
     return () => clearTimeout(t);
   }, [predictions, days, isAuthenticated, saveOnePrediction, competitionPhaseId]);
@@ -364,9 +369,10 @@ const Predictions = () => {
                       awayValue={predictions[match.id]?.away ?? ""}
                       onHomeChange={(v) => setPredictionForMatch(match.id, "home", v)}
                       onAwayChange={(v) => setPredictionForMatch(match.id, "away", v)}
-                      disabled={isPredictionClosed(day.date, match.time)}
+                      disabled={false}
                       matchDate={day.date}
                       pointsEarned={scoresByMatchId[match.id] ?? null}
+                      recentlySaved={recentlySavedMatchId === match.id}
                     />
                   ))}
                 </div>
@@ -381,6 +387,10 @@ const Predictions = () => {
             )}
             {saveError ? (
               <p className="text-center text-sm text-red-300 py-2">{saveError}</p>
+            ) : recentlySavedMatchId ? (
+              <p className={`text-center text-sm py-2 ${isDark ? "text-[#80ffe7]" : "text-emerald-700"}`}>
+                Marcador registrado correctamente.
+              </p>
             ) : null}
           </>
         ) : null}

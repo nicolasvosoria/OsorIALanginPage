@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { Trophy, BarChart3, CalendarDays, User, Users } from "lucide-react";
+import { BarChart3, CalendarDays, Clock3, User, Users } from "lucide-react";
 
 const navItems = [
   { path: "/predicciones", label: "Predicciones", icon: CalendarDays },
   { path: "/resumen", label: "Resumen", icon: BarChart3 },
-  { path: "/ranking", label: "Ranking", icon: Trophy },
+  { path: "/proximos-partidos", label: "Más próximos", icon: Clock3 },
   { path: "/grupos", label: "Grupos", icon: Users },
   { path: "/perfil", label: "Perfil", icon: User },
 ];
