@@ -168,11 +168,11 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="ghost"
-                className="w-full sm:w-auto mt-4 sm:mt-8 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-all duration-300 ease-in-out text-lg px-6 py-4 h-auto"
+                className="mt-4 h-auto min-h-[4rem] w-full max-w-full whitespace-normal break-words border-2 border-white bg-white px-4 py-4 text-base leading-snug text-black transition-all duration-300 ease-in-out hover:bg-transparent hover:text-white sm:mt-8 sm:min-h-0 sm:w-auto sm:px-6 sm:text-lg"
                 onClick={() => router.push("/ai-demo")}
               >
-                Mira lo que puede generar la IA
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <span className="min-w-0 text-center sm:text-left">Mira lo que puede generar la inteligencia artificial</span>
+                <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0" />
               </Button>
             </motion.div>
           </motion.div>
