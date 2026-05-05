@@ -95,7 +95,7 @@ const PasswordReset = () => {
               type="button"
               variant="outline"
               className="w-full h-12 rounded-xl"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/login")}
             >
               Volver al inicio de sesión
             </Button>
@@ -103,7 +103,7 @@ const PasswordReset = () => {
         )}
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          <Link to="/" className="text-primary font-semibold hover:underline">
+          <Link to="/login" className="text-primary font-semibold hover:underline">
             ← Iniciar sesión
           </Link>
         </p>

@@ -102,7 +102,7 @@ const Rankings = () => {
                         <p className="text-xs font-medium text-foreground text-center w-full max-w-[120px] truncate" title={u.username}>
                           {u.username}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">{u.points} pts</p>
+                        <p className="text-[10px] text-muted-foreground">{Number(u.points ?? 0)} pts</p>
                         <div className={`${heights[i]} w-14 rounded-t-lg mt-2 ${isFirst ? "gradient-primary" : "bg-secondary"} flex items-start justify-center pt-2`}>
                           <span className={`text-sm font-display font-bold ${isFirst ? "text-primary-foreground" : "text-secondary-foreground"}`}>
                             #{rank}
@@ -132,7 +132,7 @@ const Rankings = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{u.username}</p>
-                  <p className="text-xs text-muted-foreground">{u.points} pts</p>
+                  <p className="text-xs text-muted-foreground">{Number(u.points ?? 0)} pts</p>
                 </div>
               </motion.div>
             ))}

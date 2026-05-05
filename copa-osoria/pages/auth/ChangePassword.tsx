@@ -53,7 +53,7 @@ const ChangePassword = () => {
               <Link to="/password-reset">Solicitar nuevo enlace</Link>
             </Button>
             <Button asChild variant="outline" className="w-full rounded-xl">
-              <Link to="/">Iniciar sesión</Link>
+              <Link to="/login">Iniciar sesión</Link>
             </Button>
           </div>
         </div>
@@ -75,7 +75,7 @@ const ChangePassword = () => {
           </p>
           <Button
             className="w-full max-w-xs rounded-xl"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
           >
             Ir a iniciar sesión
           </Button>
@@ -172,7 +172,7 @@ const ChangePassword = () => {
         </motion.form>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          <Link to="/" className="text-primary font-semibold hover:underline">
+          <Link to="/login" className="text-primary font-semibold hover:underline">
             ← Iniciar sesión
           </Link>
         </p>

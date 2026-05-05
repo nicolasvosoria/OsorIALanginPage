@@ -29,6 +29,8 @@ interface MatchResultCardProps extends MatchItem {
   matchDate?: string;
   /** Puntos obtenidos en este partido (0, 2 o 5). null = sin resultado aún o sin predicción. */
   pointsEarned?: number | null;
+  /** Indicador temporal cuando la predicción acaba de guardarse. */
+  recentlySaved?: boolean;
 }
 
 const FLAG_CDN = "https://flagcdn.com";
@@ -56,6 +58,8 @@ const MatchResultCard = ({
   awayCountryCode,
   homeBadgeUrl,
   awayBadgeUrl,
+  homeScore,
+  awayScore,
   status,
   kickoffAt,
   time,
@@ -69,6 +73,7 @@ const MatchResultCard = ({
   disabled = false,
   matchDate,
   pointsEarned = null,
+  recentlySaved = false,
 }: MatchResultCardProps) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -85,6 +90,9 @@ const MatchResultCard = ({
     : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed";
   const time12 = formatTime12h(time);
   const showPoints = pointsEarned !== undefined && pointsEarned !== null;
+  const formattedPoints = showPoints ? `+${pointsEarned}` : null;
+  const pointsReason =
+    pointsEarned === 5 ? "Acertaste marcador" : pointsEarned === 2 ? "Acertaste ganador" : "";
   const matchTimeMs = kickoffAt ? new Date(kickoffAt).getTime() : null;
   const hasPassed = status === "ended" || status === "closed" || status === "cancelled" || (matchTimeMs !== null && !Number.isNaN(matchTimeMs) && matchTimeMs < Date.now());
   const statusLabel = hasPassed ? "Ya pasó" : "Próximo";
@@ -107,7 +115,7 @@ const MatchResultCard = ({
     return () => clearInterval(t);
   }, [disabled, matchDate, time]);
 
-  /** Color del texto "X puntos" (0 = gris, 2 = ámbar, 5 = verde) */
+  /** Color del texto "+X" (0 = gris, 2 = ámbar, 5 = verde) */
   const pointsTextClass =
     showPoints &&
     (pointsEarned === 5
@@ -156,19 +164,40 @@ const MatchResultCard = ({
   };
 
   return (
-    <div className="flex items-center gap-3 w-full">
       <motion.article
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05, duration: 0.3 }}
-        className={`flex-1 min-w-0 rounded-3xl border p-4 backdrop-blur ${cardClass} ${disabled ? "opacity-90" : ""}`}
+        className={`min-w-0 rounded-3xl border p-4 backdrop-blur ${cardClass} ${disabled ? "opacity-90" : ""}`}
       >
         <div className="mb-3 flex items-center justify-between gap-2">
           <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${hasPassed ? (isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-600") : (isDark ? "bg-[#2de2c2]/10 text-[#80ffe7]" : "bg-emerald-50 text-emerald-700")}`}>
             <StatusIcon size={12} />
             {statusLabel}
           </span>
-          {group ? <p className={`text-center text-xs font-medium ${strongTextClass}`}>{group.startsWith("Grupo ") ? group : `Grupo ${group}`}</p> : <span />}
+          <div className="flex items-center gap-2">
+            {showPoints ? (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-display font-bold ${pointsTextClass} ${isDark ? "bg-white/10" : "bg-slate-100"}`}
+                  aria-label={`${pointsEarned} puntos en este partido`}
+                >
+                  {formattedPoints}
+                </span>
+                {pointsReason ? (
+                  <span className={`text-[11px] font-medium ${mutedTextClass}`}>{pointsReason}</span>
+                ) : null}
+              </div>
+            ) : null}
+            {recentlySaved ? (
+              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                isDark ? "bg-[#2de2c2]/20 text-[#80ffe7]" : "bg-emerald-100 text-emerald-700"
+              }`}>
+                Registrado
+              </span>
+            ) : null}
+            {group ? <p className={`text-center text-xs font-medium ${strongTextClass}`}>{group.startsWith("Grupo ") ? group : `Grupo ${group}`}</p> : <span />}
+          </div>
         </div>
       <div className="space-y-4 sm:hidden">
         <div className="flex items-center justify-center gap-3">
@@ -275,17 +304,12 @@ const MatchResultCard = ({
           </span>
         ) : null}
       </div>
+      {hasPassed && homeScore !== null && awayScore !== null ? (
+        <div className={`mt-1 text-[11px] font-medium ${mutedTextClass}`}>
+          Final: <span className={strongTextClass}>{homeScore} - {awayScore}</span>
+        </div>
+      ) : null}
       </motion.article>
-      {/* Puntaje fuera de la caja: solo texto "X puntos" con color */}
-      {showPoints && (
-        <span
-          className={`flex-shrink-0 font-display font-semibold text-sm ${pointsTextClass}`}
-          aria-label={`${pointsEarned} puntos en este partido`}
-        >
-          {pointsEarned} puntos
-        </span>
-      )}
-    </div>
   );
 };
 

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import BottomNav from "@/copa-osoria/components/layout/BottomNav";
 import { Medal, User, Loader2 } from "lucide-react";
@@ -32,15 +31,7 @@ const fasesResumenDefault = [
 const equipos = ["Colombia", "Argentina", "Brasil", "México", "España", "Francia", "Alemania"];
 const fasesFiltro = ["Fase de Grupos", "Dieciseisavos", "Octavos", "Cuartos", "Semifinales", "Final"];
 
-const medalByPos = { 1: "gold" as const, 2: "silver" as const, 3: "bronze" as const };
-const medalColor = {
-  gold: "text-amber-400",
-  silver: "text-gray-300",
-  bronze: "text-amber-700",
-};
-
 const Summary = () => {
-  const navigate = useNavigate();
   const { user, profile } = useAuth();
   const [filtroEquipo, setFiltroEquipo] = useState("Colombia");
   const [filtroFase, setFiltroFase] = useState("Fase de Grupos");
@@ -49,6 +40,7 @@ const Summary = () => {
   const [days, setDays] = useState<DayMatches[]>(matchesFirst3Days);
   const [fasesResumen, setFasesResumen] = useState(fasesResumenDefault);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"resumen" | "ranking">("ranking");
 
   useEffect(() => {
     let cancelled = false;
@@ -87,6 +79,12 @@ const Summary = () => {
   }, [user?.id, loading, days]);
 
   const currentUserRank = user?.id ? (ranking.findIndex((r) => r.user_id === user.id) + 1) || null : null;
+  const first = ranking[0];
+  const second = ranking[1];
+  const third = ranking[2];
+  const showPodium = Boolean(first && second && third);
+  const rest = showPodium ? ranking.slice(3) : ranking;
+  const restStartRank = showPodium ? 4 : 1;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -125,65 +123,84 @@ const Summary = () => {
       </div>
 
       <div className="max-w-lg mx-auto px-4 -mt-2 space-y-5">
-        {/* Tabla de posiciones */}
-        <section className="bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm">
-          <div className="px-4 pt-4 pb-2">
-            <h2 className="text-xs font-display font-bold text-foreground uppercase tracking-wide">
-              Tabla de posiciones
-            </h2>
-          </div>
-          <div className="px-4 pb-4 max-h-[320px] overflow-y-auto space-y-1">
+        <section className="bg-card rounded-2xl border border-border/60 p-1 grid grid-cols-2 gap-1">
+          {[
+            { key: "resumen" as const, label: "Resumen" },
+            { key: "ranking" as const, label: "Ranking" },
+          ].map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => setViewMode(opt.key)}
+              className={`h-10 rounded-xl text-sm font-semibold transition-all ${viewMode === opt.key ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </section>
+
+        {/* Tabla de posiciones principal (podio + lista) */}
+        {viewMode === "ranking" && (
+          <>
             {loading ? (
-              <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
+              <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
                 <Loader2 className="animate-spin" size={18} />
                 <span className="text-sm">Cargando ranking…</span>
               </div>
             ) : ranking.length === 0 ? (
               <p className="text-sm text-muted-foreground py-3 text-center">Aún no hay datos en el ranking</p>
             ) : (
-              ranking.map((u, i) => {
-                const pos = i + 1;
-                const medal = medalByPos[pos as 1 | 2 | 3];
-                const isCurrentUser = user?.id === u.user_id;
-                return (
-                  <div
-                    key={u.user_id}
-                    className={`flex items-center gap-3 py-2 px-2 rounded-lg ${isCurrentUser ? "bg-primary/10 ring-1 ring-primary/30" : ""}`}
-                  >
-                    <div className="w-6 flex justify-center flex-shrink-0">
-                      {medal ? (
-                        <Medal size={20} className={medalColor[medal]} aria-hidden />
-                      ) : (
-                        <span className="text-xs font-display font-bold text-muted-foreground">{pos}</span>
-                      )}
+              <>
+                {showPodium && (
+                  <section className="bg-card rounded-2xl border border-border shadow-lg p-4">
+                    <div className="flex items-end justify-center gap-8 mb-2">
+                      {[second, first, third].map((u, i) => {
+                        const rank = i === 0 ? 2 : i === 1 ? 1 : 3;
+                        const heights = ["h-20", "h-28", "h-16"];
+                        const isFirst = i === 1;
+                        const medalClass = rank === 1 ? "text-amber-400" : rank === 2 ? "text-gray-300" : "text-amber-700";
+                        const initial = (u.username || "?").slice(0, 2).toUpperCase();
+                        return (
+                          <motion.div key={u.user_id} className="flex flex-col items-center min-w-[100px]">
+                            <Medal size={22} className={medalClass} aria-label={`Puesto ${rank}`} />
+                            <div className={`w-12 h-12 rounded-full ${isFirst ? "gradient-accent" : "bg-secondary"} flex items-center justify-center text-sm font-display font-bold ${isFirst ? "text-accent-foreground ring-2 ring-accent/30 ring-offset-2 ring-offset-card" : "text-secondary-foreground"} mb-2 mt-1`}>
+                              {initial}
+                            </div>
+                            <p className="text-xs font-medium text-foreground text-center w-full max-w-[120px] truncate">{u.username}</p>
+                            <p className="text-[10px] text-muted-foreground">{Number(u.points ?? 0)} pts</p>
+                            <div className={`${heights[i]} w-14 rounded-t-lg mt-2 ${isFirst ? "gradient-primary" : "bg-secondary"} flex items-start justify-center pt-2`}>
+                              <span className={`text-sm font-display font-bold ${isFirst ? "text-primary-foreground" : "text-secondary-foreground"}`}>#{rank}</span>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-display font-bold text-muted-foreground">
-                        {u.username.slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                    <span className="text-sm font-medium text-foreground flex-1 truncate">
-                      {u.username}
-                      {isCurrentUser && " (tú)"}
-                    </span>
-                    <span className="text-sm font-display font-bold text-foreground">{u.points} pts</span>
-                  </div>
-                );
-              })
+                  </section>
+                )}
+                <section className="space-y-2 max-h-[55vh] overflow-y-auto">
+                  {rest.map((u, i) => {
+                    const pos = restStartRank + i;
+                    const isCurrentUser = user?.id === u.user_id;
+                    return (
+                      <div key={u.user_id} className={`bg-card rounded-xl border border-border/60 px-4 py-3 flex items-center gap-3 ${isCurrentUser ? "ring-1 ring-primary/30" : ""}`}>
+                        <div className="w-8 h-8 rounded-full bg-field flex items-center justify-center text-xs font-display font-bold text-muted-foreground">{pos}</div>
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-display font-bold text-primary">
+                          {(u.username || "?").slice(0, 2).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{u.username}{isCurrentUser ? " (tú)" : ""}</p>
+                          <p className="text-xs text-muted-foreground">{Number(u.points ?? 0)} pts</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </section>
+              </>
             )}
-          </div>
-          <div className="px-4 pb-4 border-t border-border/60 pt-3">
-            <button
-              type="button"
-              onClick={() => navigate("/ranking")}
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              Ver tabla completa
-            </button>
-          </div>
-        </section>
+          </>
+        )}
 
         {/* Resumen de predicciones por fases */}
+        {viewMode === "resumen" && (
         <section>
           <h2 className="text-xs font-display font-bold text-foreground uppercase tracking-wide mb-3">
             Resumen de predicciones
@@ -214,8 +231,10 @@ const Summary = () => {
             })}
           </div>
         </section>
+        )}
 
         {/* Filtros por equipo y fase */}
+        {viewMode === "resumen" && (
         <section className="space-y-3 pb-4">
           <h2 className="text-xs font-display font-bold text-foreground uppercase tracking-wide">
             Filtrar por equipo y fase
@@ -251,6 +270,7 @@ const Summary = () => {
             </div>
           </div>
         </section>
+        )}
       </div>
 
       <BottomNav />

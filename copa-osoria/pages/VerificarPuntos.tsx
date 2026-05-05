@@ -32,7 +32,7 @@ const VerificarPuntos = () => (
   <div className="min-h-screen bg-background p-6">
     <div className="max-w-lg mx-auto space-y-6">
       <div>
-        <Link to="/" className="text-sm text-primary hover:underline">
+        <Link to="/login" className="text-sm text-primary hover:underline">
           ← Volver
         </Link>
         <h1 className="text-xl font-display font-bold text-foreground mt-2">
