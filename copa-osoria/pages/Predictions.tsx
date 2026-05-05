@@ -83,6 +83,18 @@ const Predictions = () => {
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
+  const pageClass = isDark ? "bg-[#07110b] text-white" : "bg-[#f5faf8] text-slate-950";
+  const gridClass = isDark ? "opacity-70" : "opacity-35";
+  const glowClass = isDark
+    ? "bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.24),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.13),transparent_36%)]"
+    : "bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.18),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.10),transparent_36%)]";
+  const panelClass = isDark
+    ? "border-[#2de2c2]/20 bg-white/[.08] shadow-[0_0_35px_rgba(45,226,194,.1)]"
+    : "border-emerald-900/10 bg-white/90 shadow-[0_18px_40px_rgba(15,23,42,.08)]";
+  const mutedTextClass = isDark ? "text-gray-300" : "text-slate-600";
+  const strongTextClass = isDark ? "text-white" : "text-slate-950";
+  const activeClass = isDark ? "bg-[#2de2c2] text-black" : "bg-[#149b78] text-white";
+  const inactiveClass = isDark ? "text-gray-300 hover:text-white hover:bg-white/[.06]" : "text-slate-600 hover:text-slate-950 hover:bg-emerald-50";
   const { saveOnePrediction, loadAllPredictions, loadScores, error: saveError, isAuthenticated } = useUserPrediction();
   const initialLoadDoneRef = useRef(false);
   const lastChangedMatchIdRef = useRef<string | null>(null);
@@ -212,9 +224,11 @@ const Predictions = () => {
   }, [competition]);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className={`relative min-h-screen overflow-hidden pb-24 ${pageClass}`}>
+      <div className={`pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] ${gridClass}`} />
+      <div className={`pointer-events-none fixed inset-0 ${glowClass}`} />
       {/* Header */}
-      <div className="gradient-primary px-4 pt-6 pb-8">
+      <div className="relative z-10 px-4 pt-6 pb-8">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -224,10 +238,10 @@ const Predictions = () => {
                 className="w-20 h-20 object-contain"
               />
               <div>
-                <h1 className="text-lg font-display font-bold text-primary-foreground">
+                <h1 className={`text-lg font-display font-bold ${strongTextClass}`}>
                   Polla Mundialista Copa Osoria 2026
                 </h1>
-                <p className="text-xs text-primary-foreground/70">
+                <p className={`text-xs ${mutedTextClass}`}>
                   Partidos y resultados
                 </p>
               </div>
@@ -235,14 +249,14 @@ const Predictions = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
-              aria-label={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border backdrop-blur transition-all active:scale-95 ${
+                isDark
+                  ? "border-[#2de2c2]/30 bg-black/25 text-[#80ffe7] shadow-[0_0_24px_rgba(45,226,194,.12)] hover:bg-[#2de2c2]/15 hover:text-white"
+                  : "border-emerald-900/10 bg-white/90 text-emerald-800 shadow-md hover:bg-emerald-50"
+              }`}
+              aria-label={isDark ? "Cambiar a modo día" : "Cambiar a modo noche"}
             >
-              {isDark ? (
-                <Sun className="text-primary-foreground" size={18} />
-              ) : (
-                <Moon className="text-primary-foreground" size={18} />
-              )}
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
 
@@ -253,12 +267,12 @@ const Predictions = () => {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="bg-primary-foreground/10 rounded-xl px-3 py-2 text-center"
+                className={`rounded-xl border px-3 py-2 text-center ${panelClass}`}
               >
-                <p className="text-[10px] text-primary-foreground/60 font-medium">
+                <p className={`text-[10px] font-medium ${mutedTextClass}`}>
                   {stat.label}
                 </p>
-                <p className="text-sm font-display font-bold text-primary-foreground">
+                <p className={`text-sm font-display font-bold ${strongTextClass}`}>
                   {stat.value}
                 </p>
               </div>
@@ -268,8 +282,8 @@ const Predictions = () => {
       </div>
 
       {/* Selector de competición */}
-      <div className="max-w-lg mx-auto px-4 mt-4">
-        <div className="bg-card rounded-2xl border border-border shadow-md p-1.5 grid grid-cols-2 gap-1 sm:grid-cols-3">
+      <div className="relative z-10 max-w-lg mx-auto px-4 mt-4">
+        <div className={`rounded-2xl border p-1.5 grid grid-cols-2 gap-1 backdrop-blur sm:grid-cols-3 ${panelClass}`}>
           {competitionOptions.map((option) => (
             <button
               key={option.key}
@@ -277,8 +291,8 @@ const Predictions = () => {
               onClick={() => setCompetition(option.key)}
               className={`min-h-11 px-2 rounded-xl text-xs font-display font-semibold transition-all ${
                 competition === option.key
-                  ? "gradient-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? `${activeClass} shadow-[0_0_22px_rgba(45,226,194,.2)]`
+                  : inactiveClass
               }`}
             >
               {option.label}
@@ -288,26 +302,26 @@ const Predictions = () => {
       </div>
 
       {/* Explicación del sistema de puntos */}
-      <div className="max-w-lg mx-auto px-4 mt-4">
-        <div className="bg-card rounded-2xl border border-border/60 px-4 py-3 shadow-sm">
-          <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            ¿Cómo sumas? <strong className="text-foreground">0</strong> pts si no le atinaste · <strong className="text-foreground">2</strong> pts si acertaste quién gana · <strong className="text-foreground">5</strong> pts si clavaste el marcador exacto.
+      <div className="relative z-10 max-w-lg mx-auto px-4 mt-4">
+        <div className={`rounded-2xl border px-4 py-3 backdrop-blur ${panelClass}`}>
+          <p className={`text-xs text-center leading-relaxed ${mutedTextClass}`}>
+            ¿Cómo sumas? <strong className={strongTextClass}>0</strong> pts si no le atinaste · <strong className={strongTextClass}>2</strong> pts si acertaste quién gana · <strong className={strongTextClass}>5</strong> pts si clavaste el marcador exacto.
           </p>
         </div>
       </div>
 
       {/* Phase toggle (solo para Mundial) */}
       {competition === "mundial" && (
-        <div className="max-w-lg mx-auto px-4 mt-4">
-          <div className="bg-card rounded-2xl border border-border shadow-md p-1.5 flex gap-1">
+        <div className="relative z-10 max-w-lg mx-auto px-4 mt-4">
+          <div className={`rounded-2xl border p-1.5 flex gap-1 backdrop-blur ${panelClass}`}>
             {(["grupos", "playoffs"] as Phase[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setPhase(p)}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-display font-semibold transition-all ${
                   phase === p
-                    ? "gradient-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? `${activeClass} shadow-[0_0_22px_rgba(45,226,194,.2)]`
+                    : inactiveClass
                 }`}
               >
                 {p === "grupos" ? "Partidos por día" : "Eliminatorias"}
@@ -318,16 +332,16 @@ const Predictions = () => {
       )}
 
       {/* Partidos por día */}
-      <div className="max-w-lg mx-auto px-4 mt-5 space-y-6">
+      <div className="relative z-10 max-w-lg mx-auto px-4 mt-5 space-y-6">
         {(phase === "grupos" && competition === "mundial") || isFootballLeagueKey(competition) ? (
           <>
             {loading ? (
-              <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
-                <Loader2 className="animate-spin" size={20} />
+              <div className={`flex items-center justify-center gap-2 py-8 ${mutedTextClass}`}>
+                <Loader2 className="animate-spin text-[#80ffe7]" size={20} />
                 <span className="text-sm">Cargando partidos…</span>
               </div>
             ) : days.length === 0 ? (
-              <p className="text-center text-sm text-muted-foreground py-8">
+              <p className={`text-center text-sm py-8 ${mutedTextClass}`}>
                 {getEmptyMatchesMessage(competition)}
               </p>
             ) : (
@@ -335,8 +349,8 @@ const Predictions = () => {
             {days.map((day) => (
               <section key={day.date}>
                 <div className="flex items-center gap-2 mb-3">
-                  <Calendar size={18} className="text-primary" />
-                  <h2 className="text-sm font-display font-bold text-foreground">
+                  <Calendar size={18} className="text-[#80ffe7]" />
+                  <h2 className={`text-sm font-display font-bold ${strongTextClass}`}>
                     {day.dateLabel}
                   </h2>
                 </div>
@@ -361,12 +375,12 @@ const Predictions = () => {
               </>
             )}
             {!loading && ((phase === "grupos" && competition === "mundial") || isFootballLeagueKey(competition)) && !isAuthenticated && (
-              <p className="text-center text-sm text-muted-foreground py-2">
+              <p className={`text-center text-sm py-2 ${mutedTextClass}`}>
                 Inicia sesión para que se guarden tus predicciones al cambiar el marcador
               </p>
             )}
             {saveError ? (
-              <p className="text-center text-sm text-destructive py-2">{saveError}</p>
+              <p className="text-center text-sm text-red-300 py-2">{saveError}</p>
             ) : null}
           </>
         ) : null}
@@ -377,8 +391,8 @@ const Predictions = () => {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <Trophy className="mx-auto text-muted-foreground/30 mb-3" size={48} />
-            <p className="text-muted-foreground text-sm">
+            <Trophy className={`mx-auto mb-3 ${isDark ? "text-gray-300/30" : "text-slate-500/40"}`} size={48} />
+            <p className={`text-sm ${mutedTextClass}`}>
               Las eliminatorias estarán disponibles próximamente
             </p>
           </motion.div>

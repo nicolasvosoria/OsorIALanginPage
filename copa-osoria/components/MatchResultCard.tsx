@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 import { MapPin, Clock, CheckCircle2, Timer } from "lucide-react";
 import type { MatchItem } from "@/copa-osoria/data/matchesByDay";
 import { getPredictionDeadlineMs, formatTimeLeft } from "@/copa-osoria/lib/predictionDeadline";
@@ -69,6 +70,19 @@ const MatchResultCard = ({
   matchDate,
   pointsEarned = null,
 }: MatchResultCardProps) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const cardClass = isDark
+    ? "border-[#2de2c2]/20 bg-white/[.08] text-white shadow-[0_0_32px_rgba(45,226,194,.1)]"
+    : "border-emerald-900/10 bg-white/95 text-slate-950 shadow-[0_18px_35px_rgba(15,23,42,.08)]";
+  const strongTextClass = isDark ? "text-white" : "text-slate-950";
+  const mutedTextClass = isDark ? "text-gray-300" : "text-slate-600";
+  const inputClass = isDark
+    ? "bg-black/30 border-white/15 text-white focus:border-[#2de2c2] focus:ring-2 focus:ring-[#2de2c2]/20"
+    : "bg-emerald-50/60 border-emerald-900/10 text-slate-950 focus:border-[#149b78] focus:ring-2 focus:ring-[#149b78]/20";
+  const disabledInputClass = isDark
+    ? "bg-white/5 border-white/10 text-gray-400 cursor-not-allowed"
+    : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed";
   const time12 = formatTime12h(time);
   const showPoints = pointsEarned !== undefined && pointsEarned !== null;
   const matchTimeMs = kickoffAt ? new Date(kickoffAt).getTime() : null;
@@ -100,7 +114,7 @@ const MatchResultCard = ({
       ? "text-green-700 dark:text-green-300"
       : pointsEarned === 2
         ? "text-amber-700 dark:text-amber-300"
-        : "text-muted-foreground");
+        : "text-gray-300");
 
   const handleHomeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,13 +136,13 @@ const MatchResultCard = ({
     const src = badgeUrl || fallback;
     if (!src) {
       return (
-        <div className="w-9 h-9 rounded-full flex-shrink-0 border border-border/50 bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground" aria-hidden>
+        <div className="w-9 h-9 rounded-full flex-shrink-0 border border-white/15 bg-white/10 flex items-center justify-center text-[10px] font-medium text-gray-300" aria-hidden>
           ?
         </div>
       );
     }
     return (
-      <div className="w-9 h-9 rounded-full bg-white border border-border/50 shadow-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <div className="w-9 h-9 rounded-full bg-white border border-white/15 shadow-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
         <img
           src={src}
           alt={badgeUrl ? `Escudo ${team}` : `Bandera ${team}`}
@@ -147,20 +161,65 @@ const MatchResultCard = ({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05, duration: 0.3 }}
-        className={`flex-1 min-w-0 bg-card rounded-xl border border-border/60 p-4 shadow-sm ${disabled ? "opacity-90" : ""}`}
+        className={`flex-1 min-w-0 rounded-3xl border p-4 backdrop-blur ${cardClass} ${disabled ? "opacity-90" : ""}`}
       >
         <div className="mb-3 flex items-center justify-between gap-2">
-          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${hasPassed ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}`}>
+          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${hasPassed ? (isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-600") : (isDark ? "bg-[#2de2c2]/10 text-[#80ffe7]" : "bg-emerald-50 text-emerald-700")}`}>
             <StatusIcon size={12} />
             {statusLabel}
           </span>
-          {group ? <p className="text-center text-xs font-medium text-foreground">{group.startsWith("Grupo ") ? group : `Grupo ${group}`}</p> : <span />}
+          {group ? <p className={`text-center text-xs font-medium ${strongTextClass}`}>{group.startsWith("Grupo ") ? group : `Grupo ${group}`}</p> : <span />}
         </div>
-      <div className="flex items-center justify-between gap-3">
+      <div className="space-y-4 sm:hidden">
+        <div className="flex items-center justify-center gap-3">
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={homeValue}
+            onChange={handleHomeChange}
+            placeholder="–"
+            aria-label={`Goles de ${homeTeam}`}
+            disabled={disabled}
+            readOnly={disabled}
+            className={`w-11 h-11 rounded-xl border text-center text-lg font-display font-bold outline-none transition-all ${
+              disabled ? disabledInputClass : inputClass
+            }`}
+          />
+          <span className={`min-w-[82px] text-center text-xs font-medium ${mutedTextClass}`}>{time12}</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={awayValue}
+            onChange={handleAwayChange}
+            placeholder="–"
+            aria-label={`Goles de ${awayTeam}`}
+            disabled={disabled}
+            readOnly={disabled}
+            className={`w-11 h-11 rounded-xl border text-center text-lg font-display font-bold outline-none transition-all ${
+              disabled ? disabledInputClass : inputClass
+            }`}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <TeamMark badgeUrl={homeBadgeUrl} countryCode={homeCountryCode} team={homeTeam} />
+            <span className={`min-w-0 flex-1 text-base font-semibold leading-tight break-words ${strongTextClass}`}>{homeTeam}</span>
+          </div>
+          <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+            <span className={`min-w-0 flex-1 text-base font-semibold leading-tight break-words ${strongTextClass}`}>{awayTeam}</span>
+            <TeamMark badgeUrl={awayBadgeUrl} countryCode={awayCountryCode} team={awayTeam} />
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden items-center justify-between gap-3 sm:flex">
         {/* Local: bandera + país */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <TeamMark badgeUrl={homeBadgeUrl} countryCode={homeCountryCode} team={homeTeam} />
-          <span className="text-sm font-medium text-foreground truncate">{homeTeam}</span>
+          <span className={`text-sm font-medium truncate ${strongTextClass}`}>{homeTeam}</span>
         </div>
 
         {/* Goles: inputs 0-9 */}
@@ -176,12 +235,10 @@ const MatchResultCard = ({
             disabled={disabled}
             readOnly={disabled}
             className={`w-9 h-9 rounded-lg border text-center text-lg font-display font-bold outline-none transition-all ${
-              disabled
-                ? "bg-muted/50 border-border/60 text-muted-foreground cursor-not-allowed"
-                : "bg-field border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+              disabled ? disabledInputClass : inputClass
             }`}
           />
-          <span className="text-muted-foreground text-xs font-medium">{time12}</span>
+          <span className={`text-xs font-medium ${mutedTextClass}`}>{time12}</span>
           <input
             type="text"
             inputMode="numeric"
@@ -193,9 +250,7 @@ const MatchResultCard = ({
             disabled={disabled}
             readOnly={disabled}
             className={`w-9 h-9 rounded-lg border text-center text-lg font-display font-bold outline-none transition-all ${
-              disabled
-                ? "bg-muted/50 border-border/60 text-muted-foreground cursor-not-allowed"
-                : "bg-field border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+              disabled ? disabledInputClass : inputClass
             }`}
           />
         </div>
@@ -203,18 +258,18 @@ const MatchResultCard = ({
         {/* Visitante: bandera + país */}
         <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
           <TeamMark badgeUrl={awayBadgeUrl} countryCode={awayCountryCode} team={awayTeam} />
-          <span className="text-sm font-medium text-foreground truncate">{awayTeam}</span>
+          <span className={`text-sm font-medium truncate ${strongTextClass}`}>{awayTeam}</span>
         </div>
       </div>
-      <div className="mt-2 flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
+      <div className={`mt-2 flex items-center justify-between gap-1 text-[11px] ${mutedTextClass}`}>
         <span className="flex items-center gap-1 min-w-0">
           <MapPin size={12} className="flex-shrink-0" />
           <span className="truncate">{stadium}</span>
         </span>
         {disabled ? (
-          <span className="flex flex-shrink-0 text-muted-foreground/80">Predicción cerrada</span>
+          <span className={`flex flex-shrink-0 ${isDark ? "text-gray-300/80" : "text-slate-500"}`}>Predicción cerrada</span>
         ) : timeLeftLabel ? (
-          <span className="flex flex-shrink-0 items-center gap-1 text-muted-foreground font-medium">
+          <span className={`flex flex-shrink-0 items-center gap-1 font-medium ${mutedTextClass}`}>
             <Clock size={12} />
             Tienes {timeLeftLabel} para elegir
           </span>
