@@ -63,7 +63,7 @@ const Register = () => {
   ];
 
   return (
-    <div className="h-screen flex flex-col relative overflow-hidden bg-[#07110b] text-white">
+    <div className="min-h-screen flex flex-col relative overflow-y-auto bg-[#07110b] text-white">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] opacity-70" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(45,226,194,.22),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.16),transparent_36%)]" />
 
@@ -76,7 +76,7 @@ const Register = () => {
         >
           {/* Logo Copa Osoria */}
           <img
-            src="/copa_osoria_logo.svg"
+            src="/copa_logo_blanco.png"
             alt="Copa Osoria"
             className="w-24 h-24 object-contain mb-2"
           />

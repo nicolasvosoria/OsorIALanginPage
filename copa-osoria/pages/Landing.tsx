@@ -5,14 +5,14 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-screen overflow-hidden bg-[#07110b] text-white">
+    <div className="relative min-h-screen overflow-y-auto bg-[#07110b] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:28px_28px] opacity-70" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.22),transparent_35%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.14),transparent_40%)]" />
 
       <header className="relative z-20">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/copa_osoria_logo.svg" alt="Copa Osoria" className="w-12 h-12 object-contain" />
+            <img src="/copa_logo_blanco.png" alt="Copa Osoria" className="w-12 h-12 object-contain" />
             <div>
               <p className="text-xs uppercase tracking-[0.34em] text-[#80ffe7]">OSORIA.TECH</p>
               <p className="font-display font-bold">Copa Osoria 2026</p>
@@ -27,7 +27,7 @@ export default function Landing() {
         </div>
       </header>
 
-      <main className="relative z-10 h-[calc(100vh-76px)] max-w-5xl mx-auto px-4 pb-4 flex flex-col justify-between">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 pb-6 flex flex-col">
         <section className="rounded-3xl border border-[#2de2c2]/25 bg-white/[.08] backdrop-blur p-4 md:p-6 shadow-[0_0_40px_rgba(45,226,194,.12)]">
           <div className="flex flex-col items-center gap-6">
             <div className="text-center">
