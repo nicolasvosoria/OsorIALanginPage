@@ -30,7 +30,7 @@ export default function CopaOsoriaApp() {
   return (
     <div className="copa-osoria min-h-screen bg-background text-foreground font-body antialiased">
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <TooltipProvider>
             <Toaster />
             <Sonner />
