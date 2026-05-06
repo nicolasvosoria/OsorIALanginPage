@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import MatchResultCard from "@/copa-osoria/components/MatchResultCard";
 import BottomNav from "@/copa-osoria/components/layout/BottomNav";
-import { Trophy, Sun, Moon, Calendar, Loader2 } from "lucide-react";
+import { Trophy, Calendar, Loader2 } from "lucide-react";
 import { matchesByDay } from "@/copa-osoria/data/matchesByDay";
 import type { DayMatches } from "@/copa-osoria/data/matchesByDay";
 import {
@@ -79,9 +79,8 @@ const Predictions = () => {
   const [competitionPhaseId, setCompetitionPhaseId] = useState<string | null>(null);
   const [days, setDays] = useState<DayMatches[]>(matchesFirst3Days);
   const [loading, setLoading] = useState(true);
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const isDark = theme === "dark";
-  const toggleTheme = () => setTheme(isDark ? "light" : "dark");
   const pageClass = isDark ? "bg-[#07110b] text-white" : "bg-[#f5faf8] text-slate-950";
   const gridClass = isDark ? "opacity-70" : "opacity-35";
   const glowClass = isDark
@@ -235,7 +234,7 @@ const Predictions = () => {
       {/* Header */}
       <div className="relative z-10 px-4 pt-6 pb-8">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3 mb-4">
             <div className="flex items-center gap-3">
               <img
                 src="/copa_logo_blanco.png"
@@ -251,18 +250,6 @@ const Predictions = () => {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border backdrop-blur transition-all active:scale-95 ${
-                isDark
-                  ? "border-[#2de2c2]/30 bg-black/25 text-[#80ffe7] shadow-[0_0_24px_rgba(45,226,194,.12)] hover:bg-[#2de2c2]/15 hover:text-white"
-                  : "border-emerald-900/10 bg-white/90 text-emerald-800 shadow-md hover:bg-emerald-50"
-              }`}
-              aria-label={isDark ? "Cambiar a modo día" : "Cambiar a modo noche"}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
