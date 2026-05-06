@@ -102,9 +102,11 @@ const GroupsList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="relative min-h-screen overflow-hidden bg-[#07110b] text-white pb-24">
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] opacity-70" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.24),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.13),transparent_36%)]" />
       {/* Header */}
-      <div className="gradient-primary px-4 pt-6 pb-10">
+      <div className="relative z-10 px-4 pt-6 pb-10">
         <div className="max-w-lg mx-auto text-center flex flex-col items-center">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3">
              <Users size={24} className="text-white" />
@@ -118,7 +120,7 @@ const GroupsList = () => {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 -mt-6">
+      <div className="relative z-10 max-w-lg mx-auto px-4 -mt-6">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                 <Button className="w-full h-14 rounded-xl shadow-lg text-base font-display mb-6">
@@ -164,12 +166,12 @@ const GroupsList = () => {
             </DialogContent>
           </Dialog>
 
-          <div className="bg-card rounded-2xl border border-border shadow-sm p-4 mb-6">
+          <div className="rounded-2xl border border-[#2de2c2]/20 bg-white/[.08] shadow-[0_0_30px_rgba(45,226,194,.1)] p-4 mb-6">
             <div className="flex items-center gap-2 mb-2">
               <Link2 size={18} className="text-primary" />
-              <h3 className="text-sm font-bold text-foreground">Unirse con enlace</h3>
+              <h3 className="text-sm font-bold text-white">Unirse con enlace</h3>
             </div>
-            <p className="text-xs text-muted-foreground mb-3">
+            <p className="text-xs text-gray-300 mb-3">
               Pega el enlace de invitación que te compartieron para unirte a un grupo.
             </p>
             <div className="flex gap-2">
@@ -197,18 +199,18 @@ const GroupsList = () => {
                 <Loader2 className="animate-spin" size={24} />
              </div>
           ) : groups.length === 0 ? (
-             <div className="bg-card rounded-2xl border border-border px-6 py-10 text-center shadow-sm">
+             <div className="rounded-2xl border border-[#2de2c2]/20 bg-white/[.08] px-6 py-10 text-center shadow-[0_0_30px_rgba(45,226,194,.1)]">
                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Info size={24} className="text-primary" />
                  </div>
-                 <h3 className="text-sm font-bold text-foreground mb-1">Aún no tienes grupos</h3>
-                 <p className="text-xs text-muted-foreground">
+                 <h3 className="text-sm font-bold text-white mb-1">Aún no tienes grupos</h3>
+                 <p className="text-xs text-gray-300">
                      Crea tu primer grupo para invitar a tus amigos o espera a que te compartan un enlace para unirte a uno.
                  </p>
              </div>
           ) : (
             <div className="space-y-3">
-              <h2 className="text-sm font-bold text-foreground mb-3 px-1">Tus grupos actuales</h2>
+              <h2 className="text-sm font-bold text-white mb-3 px-1">Tus grupos actuales</h2>
               {groups.map((g, i) => (
                 <motion.div
                   key={g.id}
@@ -216,11 +218,11 @@ const GroupsList = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                   onClick={() => navigate(`/grupos/${g.id}`)}
-                  className="bg-card rounded-xl border border-border/60 p-4 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all hover:bg-muted/30"
+                  className="rounded-xl border border-[#2de2c2]/20 bg-white/[.08] p-4 shadow-[0_0_20px_rgba(45,226,194,.08)] flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all hover:bg-white/[.12]"
                 >
                   <div>
-                    <h3 className="text-base font-bold text-foreground font-display">{g.name}</h3>
-                    {g.description && <p className="text-xs text-muted-foreground mt-0.5">{g.description}</p>}
+                    <h3 className="text-base font-bold text-white font-display">{g.name}</h3>
+                    {g.description && <p className="text-xs text-gray-300 mt-0.5">{g.description}</p>}
                   </div>
                   <ChevronRight size={20} className="text-muted-foreground/50" />
                 </motion.div>

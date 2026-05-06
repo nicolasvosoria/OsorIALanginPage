@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
-import { MapPin, Clock, CheckCircle2, Timer } from "lucide-react";
+import { Clock, CheckCircle2, Timer } from "lucide-react";
 import type { MatchItem } from "@/copa-osoria/data/matchesByDay";
 import { getPredictionDeadlineMs, formatTimeLeft } from "@/copa-osoria/lib/predictionDeadline";
 
@@ -93,6 +93,7 @@ const MatchResultCard = ({
   const formattedPoints = showPoints ? `+${pointsEarned}` : null;
   const pointsReason =
     pointsEarned === 5 ? "Acertaste marcador" : pointsEarned === 2 ? "Acertaste ganador" : "";
+  const hasRegisteredPrediction = homeValue !== "" && awayValue !== "";
   const matchTimeMs = kickoffAt ? new Date(kickoffAt).getTime() : null;
   const hasPassed = status === "ended" || status === "closed" || status === "cancelled" || (matchTimeMs !== null && !Number.isNaN(matchTimeMs) && matchTimeMs < Date.now());
   const statusLabel = hasPassed ? "Ya pasó" : "Próximo";
@@ -195,6 +196,12 @@ const MatchResultCard = ({
               }`}>
                 Registrado
               </span>
+            ) : hasRegisteredPrediction ? (
+              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                isDark ? "bg-emerald-500/20 text-emerald-300" : "bg-emerald-100 text-emerald-700"
+              }`}>
+                ✓ Guardado
+              </span>
             ) : null}
             {group ? <p className={`text-center text-xs font-medium ${strongTextClass}`}>{group.startsWith("Grupo ") ? group : `Grupo ${group}`}</p> : <span />}
           </div>
@@ -290,11 +297,7 @@ const MatchResultCard = ({
           <span className={`text-sm font-medium truncate ${strongTextClass}`}>{awayTeam}</span>
         </div>
       </div>
-      <div className={`mt-2 flex items-center justify-between gap-1 text-[11px] ${mutedTextClass}`}>
-        <span className="flex items-center gap-1 min-w-0">
-          <MapPin size={12} className="flex-shrink-0" />
-          <span className="truncate">{stadium}</span>
-        </span>
+      <div className={`mt-2 flex items-center justify-end gap-1 text-[11px] ${mutedTextClass}`}>
         {disabled ? (
           <span className={`flex flex-shrink-0 ${isDark ? "text-gray-300/80" : "text-slate-500"}`}>Predicción cerrada</span>
         ) : timeLeftLabel ? (

@@ -38,7 +38,7 @@ const Login = () => {
         >
           {/* Logo Copa Osoria */}
           <img
-            src="/copa_osoria_logo.svg"
+            src="/copa_logo_blanco.png"
             alt="Copa Osoria"
             className="w-28 h-28 object-contain mb-5 rounded-3xl border border-[#2de2c2]/40 bg-white/10 p-3 shadow-[0_0_40px_rgba(45,226,194,.18)] backdrop-blur"
           />

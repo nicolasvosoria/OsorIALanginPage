@@ -87,31 +87,33 @@ const Summary = () => {
   const restStartRank = showPodium ? 4 : 1;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="relative min-h-screen overflow-hidden pb-24 bg-[#07110b] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] opacity-70" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.24),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.13),transparent_36%)]" />
       {/* Encabezado: logo, título, liga, métricas, avatar */}
-      <div className="gradient-primary px-4 pt-6 pb-6">
+      <div className="relative z-10 px-4 pt-6 pb-6">
         <div className="max-w-lg mx-auto">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <img
-                src="/copa_osoria_logo.svg"
+                src="/copa_logo_blanco.png"
                 alt="Copa Osoria"
                 className="w-24 h-24 object-contain flex-shrink-0"
               />
               <div className="min-w-0">
-                <h1 className="text-lg font-display font-bold text-primary-foreground leading-tight">
+                <h1 className="text-lg font-display font-bold text-white leading-tight">
                   Polla Mundialista Copa Osoria 2026
                 </h1>
-                <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-2 text-xs text-primary-foreground/90">
+                <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-2 text-xs text-gray-300">
                   <span>Ranking Global <strong>#{loading ? "…" : (currentUserRank || "—")}</strong></span>
                   <span>Ranking Liga: <strong>#{loading ? "…" : (currentUserRank || "—")}</strong></span>
                   <span>Puntos: <strong>{loading ? "…" : `${userPoints} pts`}</strong></span>
                 </div>
               </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center flex-shrink-0 border-2 border-primary-foreground/30">
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 border border-[#2de2c2]/25">
               {profile?.username ? (
-                <span className="text-sm font-display font-bold text-primary-foreground">
+                <span className="text-sm font-display font-bold text-white">
                   {profile.username.slice(0, 2).toUpperCase()}
                 </span>
               ) : (
@@ -122,8 +124,8 @@ const Summary = () => {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 -mt-2 space-y-5">
-        <section className="bg-card rounded-2xl border border-border/60 p-1 grid grid-cols-2 gap-1">
+      <div className="relative z-10 max-w-lg mx-auto px-4 -mt-2 space-y-5">
+        <section className="rounded-2xl border border-[#2de2c2]/20 bg-white/[.08] p-1 grid grid-cols-2 gap-1">
           {[
             { key: "resumen" as const, label: "Resumen" },
             { key: "ranking" as const, label: "Ranking" },
@@ -131,7 +133,7 @@ const Summary = () => {
             <button
               key={opt.key}
               onClick={() => setViewMode(opt.key)}
-              className={`h-10 rounded-xl text-sm font-semibold transition-all ${viewMode === opt.key ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              className={`h-10 rounded-xl text-sm font-semibold transition-all ${viewMode === opt.key ? "bg-[#2de2c2] text-black" : "text-gray-300"}`}
             >
               {opt.label}
             </button>
@@ -142,16 +144,16 @@ const Summary = () => {
         {viewMode === "ranking" && (
           <>
             {loading ? (
-              <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
+              <div className="flex items-center justify-center gap-2 py-8 text-gray-300">
                 <Loader2 className="animate-spin" size={18} />
                 <span className="text-sm">Cargando ranking…</span>
               </div>
             ) : ranking.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-3 text-center">Aún no hay datos en el ranking</p>
+              <p className="text-sm text-gray-300 py-3 text-center">Aún no hay datos en el ranking</p>
             ) : (
               <>
                 {showPodium && (
-                  <section className="bg-card rounded-2xl border border-border shadow-lg p-4">
+                  <section className="rounded-2xl border border-[#2de2c2]/20 bg-white/[.08] shadow-[0_0_35px_rgba(45,226,194,.1)] p-4">
                     <div className="flex items-end justify-center gap-8 mb-2">
                       {[second, first, third].map((u, i) => {
                         const rank = i === 0 ? 2 : i === 1 ? 1 : 3;
@@ -165,8 +167,8 @@ const Summary = () => {
                             <div className={`w-12 h-12 rounded-full ${isFirst ? "gradient-accent" : "bg-secondary"} flex items-center justify-center text-sm font-display font-bold ${isFirst ? "text-accent-foreground ring-2 ring-accent/30 ring-offset-2 ring-offset-card" : "text-secondary-foreground"} mb-2 mt-1`}>
                               {initial}
                             </div>
-                            <p className="text-xs font-medium text-foreground text-center w-full max-w-[120px] truncate">{u.username}</p>
-                            <p className="text-[10px] text-muted-foreground">{Number(u.points ?? 0)} pts</p>
+                            <p className="text-xs font-medium text-white text-center w-full max-w-[120px] truncate">{u.username}</p>
+                            <p className="text-[10px] text-gray-300">{Number(u.points ?? 0)} pts</p>
                             <div className={`${heights[i]} w-14 rounded-t-lg mt-2 ${isFirst ? "gradient-primary" : "bg-secondary"} flex items-start justify-center pt-2`}>
                               <span className={`text-sm font-display font-bold ${isFirst ? "text-primary-foreground" : "text-secondary-foreground"}`}>#{rank}</span>
                             </div>
@@ -181,14 +183,14 @@ const Summary = () => {
                     const pos = restStartRank + i;
                     const isCurrentUser = user?.id === u.user_id;
                     return (
-                      <div key={u.user_id} className={`bg-card rounded-xl border border-border/60 px-4 py-3 flex items-center gap-3 ${isCurrentUser ? "ring-1 ring-primary/30" : ""}`}>
-                        <div className="w-8 h-8 rounded-full bg-field flex items-center justify-center text-xs font-display font-bold text-muted-foreground">{pos}</div>
-                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-display font-bold text-primary">
+                      <div key={u.user_id} className={`rounded-xl border border-[#2de2c2]/20 bg-white/[.08] px-4 py-3 flex items-center gap-3 ${isCurrentUser ? "ring-1 ring-[#2de2c2]/40" : ""}`}>
+                        <div className="w-8 h-8 rounded-full bg-black/30 flex items-center justify-center text-xs font-display font-bold text-gray-300">{pos}</div>
+                        <div className="w-9 h-9 rounded-full bg-[#2de2c2]/20 flex items-center justify-center text-xs font-display font-bold text-[#80ffe7]">
                           {(u.username || "?").slice(0, 2).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{u.username}{isCurrentUser ? " (tú)" : ""}</p>
-                          <p className="text-xs text-muted-foreground">{Number(u.points ?? 0)} pts</p>
+                          <p className="text-sm font-medium text-white truncate">{u.username}{isCurrentUser ? " (tú)" : ""}</p>
+                          <p className="text-xs text-gray-300">{Number(u.points ?? 0)} pts</p>
                         </div>
                       </div>
                     );

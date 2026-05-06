@@ -41,7 +41,7 @@ const ChangePassword = () => {
       <div className="min-h-screen flex flex-col relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/95 to-background" />
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
-          <img src="/copa_osoria_logo.svg" alt="Copa Osoria" className="w-24 h-24 object-contain mb-6 opacity-80" />
+          <img src="/copa_logo_blanco.png" alt="Copa Osoria" className="w-24 h-24 object-contain mb-6 opacity-80" />
           <h1 className="text-xl font-display font-bold text-foreground mb-2">
             Enlace inválido o expirado
           </h1>
@@ -66,7 +66,7 @@ const ChangePassword = () => {
       <div className="min-h-screen flex flex-col relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/95 to-background" />
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
-          <img src="/copa_osoria_logo.svg" alt="Copa Osoria" className="w-32 h-32 object-contain mb-6" />
+          <img src="/copa_logo_blanco.png" alt="Copa Osoria" className="w-32 h-32 object-contain mb-6" />
           <h1 className="text-xl font-display font-bold text-foreground mb-2">
             Contraseña actualizada
           </h1>
@@ -96,7 +96,7 @@ const ChangePassword = () => {
           className="flex flex-col items-center mb-10"
         >
           <img
-            src="/copa_osoria_logo.svg"
+            src="/copa_logo_blanco.png"
             alt="Copa Osoria"
             className="w-40 h-40 object-contain mb-4"
           />

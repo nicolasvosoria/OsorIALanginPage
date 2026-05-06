@@ -33,7 +33,7 @@ const PasswordReset = () => {
           className="flex flex-col items-center mb-10"
         >
           <img
-            src="/copa_osoria_logo.svg"
+            src="/copa_logo_blanco.png"
             alt="Copa Osoria"
             className="w-40 h-40 object-contain mb-4"
           />

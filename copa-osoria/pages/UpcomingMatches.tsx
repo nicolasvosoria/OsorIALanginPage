@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTheme } from "next-themes";
 import { Calendar, Loader2 } from "lucide-react";
 import BottomNav from "@/copa-osoria/components/layout/BottomNav";
 import MatchResultCard from "@/copa-osoria/components/MatchResultCard";
@@ -39,8 +38,6 @@ type MatchWithMeta = {
 const SAVE_DEBOUNCE_MS = 600;
 
 export default function UpcomingMatches() {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const [loading, setLoading] = useState(true);
   const [allMatches, setAllMatches] = useState<MatchWithMeta[]>([]);
   const [predictions, setPredictions] = useState<Record<string, { home: string; away: string }>>({});
@@ -166,20 +163,22 @@ export default function UpcomingMatches() {
   }, [predictions, next5, phaseIdsByLeague, isAuthenticated, saveOnePrediction]);
 
   return (
-    <div className={`min-h-screen pb-24 ${isDark ? "bg-[#07110b] text-white" : "bg-[#f5faf8] text-slate-950"}`}>
-      <div className="max-w-lg mx-auto px-4 pt-6">
+    <div className="relative min-h-screen overflow-hidden pb-24 bg-[#07110b] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] opacity-70" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.24),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.13),transparent_36%)]" />
+      <div className="relative z-10 max-w-lg mx-auto px-4 pt-6">
         <h1 className="text-lg font-display font-bold">Más próximos</h1>
-        <p className={`text-xs mt-1 ${isDark ? "text-gray-300" : "text-slate-600"}`}>Los 5 partidos más cercanos entre todas las ligas.</p>
+        <p className="text-xs mt-1 text-gray-300">Los 5 partidos más cercanos entre todas las ligas.</p>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 mt-5 space-y-3">
+      <div className="relative z-10 max-w-lg mx-auto px-4 mt-5 space-y-3">
         {loading ? (
-          <div className={`flex items-center justify-center gap-2 py-8 ${isDark ? "text-gray-300" : "text-slate-600"}`}>
+          <div className="flex items-center justify-center gap-2 py-8 text-gray-300">
             <Loader2 className="animate-spin text-[#80ffe7]" size={20} />
             <span className="text-sm">Cargando partidos…</span>
           </div>
         ) : next5.length === 0 ? (
-          <p className={`text-center text-sm py-8 ${isDark ? "text-gray-300" : "text-slate-600"}`}>No hay partidos próximos.</p>
+          <p className="text-center text-sm py-8 text-gray-300">No hay partidos próximos.</p>
         ) : (
           next5.map(({ day, match, leagueLabel }, i) => (
             <section key={`${leagueLabel}-${match.id}`} className="space-y-2">
@@ -188,7 +187,7 @@ export default function UpcomingMatches() {
                   <Calendar size={16} className="text-[#80ffe7]" />
                   <h2 className="text-xs font-display font-bold">{day.dateLabel}</h2>
                 </div>
-                <span className={`text-[11px] font-semibold ${isDark ? "text-[#80ffe7]" : "text-emerald-700"}`}>{leagueLabel}</span>
+                <span className="text-[11px] font-semibold text-[#80ffe7]">{leagueLabel}</span>
               </div>
               <MatchResultCard
                 {...match}

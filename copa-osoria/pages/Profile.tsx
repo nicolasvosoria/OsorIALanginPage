@@ -117,23 +117,25 @@ const Profile = () => {
 
   if (authLoading || !profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center pb-24">
-        <p className="text-muted-foreground">Cargando perfil…</p>
+      <div className="min-h-screen bg-[#07110b] flex items-center justify-center pb-24">
+        <p className="text-gray-300">Cargando perfil…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="gradient-primary px-4 pt-6 pb-8">
+    <div className="relative min-h-screen overflow-hidden bg-[#07110b] text-white pb-24">
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:26px_26px] opacity-70" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,226,194,.24),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(34,197,94,.13),transparent_36%)]" />
+      <div className="relative z-10 px-4 pt-6 pb-8">
         <div className="max-w-lg mx-auto text-center">
-          <h1 className="text-xl font-display font-bold text-primary-foreground">
+          <h1 className="text-xl font-display font-bold text-white">
             Mi Perfil
           </h1>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 -mt-4 space-y-5">
+      <div className="relative z-10 max-w-lg mx-auto px-4 -mt-4 space-y-5">
         {/* Avatar con botón editar */}
         <div className="flex flex-col items-center">
           <Dialog open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen}>

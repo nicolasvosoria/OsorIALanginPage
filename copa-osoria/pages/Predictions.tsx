@@ -238,7 +238,7 @@ const Predictions = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <img
-                src="/copa_osoria_logo.svg"
+                src="/copa_logo_blanco.png"
                 alt="Copa Osoria"
                 className="w-20 h-20 object-contain"
               />
