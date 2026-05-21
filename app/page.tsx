@@ -123,7 +123,7 @@ export default function Home() {
             size="sm"
             className="absolute right-4 top-4 z-40 border-2 border-white bg-transparent px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:bg-white hover:text-black sm:right-6 lg:right-8"
           >
-            <a href="/copa-osoria" aria-label="Ingresar a Copa Osoria">
+            <a href="https://copa.osoria.tech" aria-label="Ingresar a Copa Osoria">
               Copa Osoria
               <Trophy className="ml-2 h-4 w-4" />
             </a>
