@@ -2,25 +2,45 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { SpeedDial } from "@/components/speed-dial"
+
+// Sprite pixel-art de 32x34. Se genera con scripts/generar-sprite-oso.py:
+// ese script es la fuente de verdad, esto es solo su salida embebida.
+const SPRITE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAiCAYAAAA+stv/AAAB2ElEQVR42u1Xq04DQRQ9M1mBKIIKEhLECiAYzISgcPwBqgq1aUgVio+oWtU0TVVVPwCLqyJkDYaUihFNSBBFUNmkqFmmw7zutgQEN2my87j3nN65jxngX35ZWGhDWq8t1beczVms4Vg9FjKSZ6Ic3/QLyNmc6cZNUes2PRIB3Ugrkegs0tKYbtwUfd3Us5FgFPAqEiLBY5QPjr5+VOksUrQS6VznIWUTtCoJchCm9dryrn3pVJyMJYmEKwa8HnCBUMF9koQ2TMZyxe0x4Ne9ovzuNsV6BKj/WIG/vn8AAPZ2tr0keEwBooLb5vNMwFbAWGwVXIcAAGxxe0mOOoKL5i0A4PC0Uc69PA4BAPe99lpByGPBY9ZdZ02OAdVUbvoFKB6ygXWbwtuMEoq7lNtDEko90hEoOTlreMfUChiVBaq3Pz0Mv4GqOV8g6uDKXnQ7vjrfx2A0RZ4JbyCGskDFkbJnkmAucF3E8W7lNCue31bGJomEajCUltTawDcNTtlHJvAT8vcIyNmcDUbTjQSgqW/LgsRVhgej6XITBBSw64ES9TLS2zI1C0KVkFPAY1LMXHddRCrXAR1E90bVe0ElAmWb7jeQZwJ626beokivY9tr12wyof2mfAI3+guOJa+HIwAAAABJRU5ErkJggg=="
+
+const SPRITE_W = 32
+const SPRITE_H = 34
+
+// Píxeles de "dato" que titilan sobre el pelaje, en porcentaje del sprite.
+const DATA_PIXELS = [
+  { x: 15.62, y: 23.53 },
+  { x: 78.12, y: 17.65 },
+  { x: 9.38, y: 44.12 },
+  { x: 84.38, y: 50.0 },
+  { x: 15.62, y: 70.59 },
+  { x: 81.25, y: 73.53 },
+  { x: 28.12, y: 85.29 },
+  { x: 68.75, y: 85.29 },
+]
 
 // Segundos que tarda en cruzar la pantalla de un lado al otro.
-const CROSSING_SECONDS = 22
+const CROSSING_SECONDS = 26
 
-// El FAB de contacto y el chat viven en bottom-6 right-6; el oso se detiene
-// antes de llegar para no caminarles por encima.
-const RIGHT_SAFE_ZONE = 120
+// Ancho del oso en escritorio.
+const BEAR_W = 84
+const BEAR_H = Math.round((BEAR_W * SPRITE_H) / SPRITE_W)
 
-export function OsoMascota() {
+interface OsoMascotaProps {
+  onChatOpen: () => void
+}
+
+export function OsoMascota({ onChatOpen }: OsoMascotaProps) {
   const [maxX, setMaxX] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
-    const measure = () => {
-      const size = window.innerWidth < 640 ? 56 : 76
-      setMaxX(Math.max(0, window.innerWidth - size - RIGHT_SAFE_ZONE))
-    }
-
+    const measure = () => setMaxX(Math.max(0, window.innerWidth - BEAR_W - 48))
     measure()
     window.addEventListener("resize", measure)
     return () => window.removeEventListener("resize", measure)
@@ -30,130 +50,108 @@ export function OsoMascota() {
     document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth" })
   }
 
-  // Ida y vuelta: mira a la derecha en la primera mitad del recorrido y a la
-  // izquierda en la segunda, para que nunca camine de espaldas.
-  const walk = prefersReducedMotion
-    ? {}
-    : {
-        x: [0, maxX, 0],
-        transition: {
-          duration: CROSSING_SECONDS,
-          repeat: Infinity,
-          ease: "linear" as const,
-        },
-      }
-
-  const facing = prefersReducedMotion
-    ? {}
-    : {
-        scaleX: [1, 1, -1, -1],
-        transition: {
-          duration: CROSSING_SECONDS,
-          times: [0, 0.499, 0.5, 1],
-          repeat: Infinity,
-          ease: "linear" as const,
-        },
-      }
+  const still = prefersReducedMotion || isPaused
 
   return (
-    <div className="pointer-events-none fixed bottom-0 left-0 z-30 hidden w-full sm:block">
+    <div className="pointer-events-none fixed bottom-0 left-0 z-40 hidden w-full sm:block">
       <motion.div
         className="w-fit"
-        animate={isPaused ? { x: undefined } : walk}
-        style={prefersReducedMotion ? { transform: `translateX(16px)` } : undefined}
+        animate={
+          prefersReducedMotion || isPaused
+            ? {}
+            : {
+                x: [0, maxX, 0],
+                transition: {
+                  duration: CROSSING_SECONDS,
+                  repeat: Infinity,
+                  ease: "linear",
+                },
+              }
+        }
+        style={prefersReducedMotion ? { transform: "translateX(24px)" } : undefined}
+        onHoverStart={() => setIsPaused(true)}
+        onHoverEnd={() => setIsPaused(false)}
       >
-        <motion.button
-          type="button"
-          onClick={goToContact}
-          onHoverStart={() => setIsPaused(true)}
-          onHoverEnd={() => setIsPaused(false)}
-          onFocus={() => setIsPaused(true)}
-          onBlur={() => setIsPaused(false)}
-          animate={isPaused ? {} : facing}
-          className="pointer-events-auto group relative block cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#11B30B] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-          aria-label="Hablar con nosotros: ir a la sección de contacto"
-        >
-          <Bear paused={isPaused || Boolean(prefersReducedMotion)} />
-          <Bubble />
-        </motion.button>
+        <div className="pointer-events-auto relative flex w-fit flex-col items-center gap-1 pb-3">
+          {/* El botón de contacto viaja sobre la cabeza del oso */}
+          <div className="relative z-10">
+            <SpeedDial onChatOpen={onChatOpen} inline />
+          </div>
+
+          <motion.button
+            type="button"
+            onClick={goToContact}
+            onFocus={() => setIsPaused(true)}
+            onBlur={() => setIsPaused(false)}
+            className="group relative block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#11B30B] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            aria-label="Hablar con nosotros: ir a la sección de contacto"
+            // Camina mirando a la derecha en la ida y a la izquierda en la vuelta.
+            animate={
+              still
+                ? {}
+                : {
+                    scaleX: [1, 1, -1, -1],
+                    y: [0, -3, 0],
+                    transition: {
+                      scaleX: {
+                        duration: CROSSING_SECONDS,
+                        times: [0, 0.499, 0.5, 1],
+                        repeat: Infinity,
+                        ease: "linear",
+                      },
+                      y: { duration: 0.5, repeat: Infinity, ease: "easeInOut" },
+                    },
+                  }
+            }
+          >
+            <span className="relative block" style={{ width: BEAR_W, height: BEAR_H }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- data URI: sin red ni optimización que aplicar */}
+              <img
+                src={SPRITE}
+                alt=""
+                width={BEAR_W}
+                height={BEAR_H}
+                aria-hidden="true"
+                // Sin esto el navegador suaviza el sprite y deja de verse retro.
+                style={{ imageRendering: "pixelated" }}
+                className="block h-full w-full drop-shadow-[0_0_10px_rgba(17,179,11,0.3)]"
+              />
+              {DATA_PIXELS.map((pixel, index) => (
+                <motion.span
+                  key={`${pixel.x}-${pixel.y}`}
+                  className="absolute rounded-[1px] bg-[#6EFF5A]"
+                  style={{
+                    left: `${pixel.x}%`,
+                    top: `${pixel.y}%`,
+                    width: `${100 / SPRITE_W}%`,
+                    height: `${100 / SPRITE_H}%`,
+                  }}
+                  animate={
+                    prefersReducedMotion
+                      ? { opacity: 0.9 }
+                      : {
+                          opacity: [0.25, 1, 0.25],
+                          transition: {
+                            duration: 1.6,
+                            repeat: Infinity,
+                            delay: index * 0.18,
+                            ease: "easeInOut",
+                          },
+                        }
+                  }
+                />
+              ))}
+            </span>
+
+            <span
+              className="pointer-events-none absolute -left-2 top-1/2 -translate-x-full -translate-y-1/2 whitespace-nowrap rounded-md border-2 border-black bg-white px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-black opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+              aria-hidden="true"
+            >
+              ¡Hablemos!
+            </span>
+          </motion.button>
+        </div>
       </motion.div>
     </div>
-  )
-}
-
-/** El bocadillo explica para qué sirve el oso; sin él es solo algo que se mueve. */
-function Bubble() {
-  return (
-    <span
-      className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full bg-white px-3 py-1 text-xs font-semibold text-black opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
-      aria-hidden="true"
-    >
-      ¡Hablemos!
-    </span>
-  )
-}
-
-function Bear({ paused }: { paused: boolean }) {
-  // Las patas se mueven en fases opuestas; al pausar quedan quietas.
-  const swing = (from: number) =>
-    paused
-      ? {}
-      : {
-          rotate: [from, -from, from],
-          transition: { duration: 0.6, repeat: Infinity, ease: "easeInOut" as const },
-        }
-
-  return (
-    <motion.svg
-      viewBox="0 0 76 68"
-      className="h-14 w-14 drop-shadow-[0_0_12px_rgba(17,179,11,0.35)] sm:h-[76px] sm:w-[76px]"
-      role="img"
-      aria-hidden="true"
-      animate={paused ? {} : { y: [0, -2, 0] }}
-      transition={paused ? undefined : { duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
-    >
-      {/* patas traseras */}
-      <motion.g
-        animate={swing(14)}
-        style={{ transformOrigin: "22px 46px", transformBox: "fill-box" }}
-      >
-        <rect x="17" y="44" width="9" height="18" rx="4.5" fill="#d4d4d4" />
-      </motion.g>
-      {/* patas delanteras */}
-      <motion.g
-        animate={swing(-14)}
-        style={{ transformOrigin: "42px 46px", transformBox: "fill-box" }}
-      >
-        <rect x="38" y="44" width="9" height="18" rx="4.5" fill="#d4d4d4" />
-      </motion.g>
-
-      {/* cola */}
-      <circle cx="9" cy="36" r="5" fill="#e8e8e8" />
-      {/* cuerpo */}
-      <ellipse cx="30" cy="38" rx="21" ry="15" fill="#ffffff" />
-
-      {/* pata delantera visible, por encima del cuerpo */}
-      <motion.g
-        animate={swing(16)}
-        style={{ transformOrigin: "44px 44px", transformBox: "fill-box" }}
-      >
-        <rect x="41" y="42" width="9" height="19" rx="4.5" fill="#ffffff" />
-      </motion.g>
-
-      {/* bufanda: el único punto de color, el verde de la marca */}
-      <path d="M45 32 q7 5 14 1 l1 6 q-8 4 -15 -1 z" fill="#11B30B" />
-
-      {/* oreja */}
-      <circle cx="50" cy="13" r="6" fill="#ffffff" />
-      <circle cx="50" cy="13" r="2.6" fill="#11B30B" opacity="0.55" />
-      {/* cabeza */}
-      <circle cx="55" cy="25" r="13" fill="#ffffff" />
-      {/* hocico */}
-      <ellipse cx="65" cy="29" rx="7.5" ry="5.5" fill="#ececec" />
-      <ellipse cx="70" cy="27" rx="2.6" ry="2.1" fill="#1a1a1a" />
-      {/* ojo */}
-      <circle cx="56" cy="22" r="2.1" fill="#1a1a1a" />
-      <circle cx="56.7" cy="21.3" r="0.7" fill="#ffffff" />
-    </motion.svg>
   )
 }

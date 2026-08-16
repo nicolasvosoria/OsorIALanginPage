@@ -370,10 +370,12 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* El oso camina por el borde inferior y lleva al formulario de contacto */}
-        <OsoMascota />
-
-        <SpeedDial onChatOpen={() => setIsChatOpen(true)} />
+        {/* En escritorio el oso camina por el borde inferior cargando el botón
+            de contacto. En móvil no cabe, así que ahí el botón sigue fijo. */}
+        <OsoMascota onChatOpen={() => setIsChatOpen(true)} />
+        <div className="sm:hidden">
+          <SpeedDial onChatOpen={() => setIsChatOpen(true)} />
+        </div>
         <ChatBot isOpenExternal={isChatOpen} onOpenChange={setIsChatOpen} showFloatingButton={false} />
         <Footer />
       </div>

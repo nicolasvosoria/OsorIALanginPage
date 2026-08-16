@@ -8,9 +8,11 @@ import Link from "next/link"
 
 interface SpeedDialProps {
   onChatOpen: () => void
+  /** Montado sobre el oso mascota en vez de fijo en la esquina. */
+  inline?: boolean
 }
 
-export function SpeedDial({ onChatOpen }: SpeedDialProps) {
+export function SpeedDial({ onChatOpen, inline = false }: SpeedDialProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleMenu = () => {
@@ -43,7 +45,8 @@ export function SpeedDial({ onChatOpen }: SpeedDialProps) {
         const message = encodeURIComponent(
           "Hola, vengo desde la página web de OsorIA.tech y me gustaría obtener más información sobre cómo puedo acceder a sus servicios."
         )
-        window.open(`https://wa.me/3058661668?text=${message}`, "_blank", "noopener,noreferrer")
+        // Con indicativo de país: sin el 57 WhatsApp rechaza el número.
+        window.open(`https://wa.me/573058661668?text=${message}`, "_blank", "noopener,noreferrer")
         setIsOpen(false)
       },
     },
@@ -60,12 +63,18 @@ export function SpeedDial({ onChatOpen }: SpeedDialProps) {
   ]
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className={inline ? "relative" : "fixed bottom-6 right-6 z-50"}>
       {/* Speed Dial Items */}
       <div className="relative">
         <AnimatePresence>
           {isOpen && (
-            <div className="absolute bottom-16 right-0 flex flex-col-reverse gap-3">
+            <div
+              className={
+                inline
+                  ? "absolute bottom-14 left-1/2 flex -translate-x-1/2 flex-col-reverse items-center gap-3"
+                  : "absolute bottom-16 right-0 flex flex-col-reverse gap-3"
+              }
+            >
               {items.map((item, index) => (
                 <motion.div
                   key={item.id}
@@ -111,7 +120,11 @@ export function SpeedDial({ onChatOpen }: SpeedDialProps) {
         >
           <Button
             onClick={toggleMenu}
-            className="w-16 h-16 rounded-full bg-white text-black hover:bg-gray-100 shadow-lg border-2 border-gray-200 transition-all duration-300"
+            aria-label={isOpen ? "Cerrar opciones de contacto" : "Abrir opciones de contacto"}
+            aria-expanded={isOpen}
+            className={`rounded-full bg-white text-black hover:bg-gray-100 shadow-lg border-2 border-gray-200 transition-all duration-300 ${
+              inline ? "w-12 h-12" : "w-16 h-16"
+            }`}
             size="lg"
           >
             <AnimatePresence mode="wait">
