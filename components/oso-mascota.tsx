@@ -1,157 +1,97 @@
 "use client"
 
-import { motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { SpeedDial } from "@/components/speed-dial"
 
-// Sprite pixel-art de 32x34. Se genera con scripts/generar-sprite-oso.py:
-// ese script es la fuente de verdad, esto es solo su salida embebida.
-const SPRITE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAiCAYAAAA+stv/AAAB2ElEQVR42u1Xq04DQRQ9M1mBKIIKEhLECiAYzISgcPwBqgq1aUgVio+oWtU0TVVVPwCLqyJkDYaUihFNSBBFUNmkqFmmw7zutgQEN2my87j3nN65jxngX35ZWGhDWq8t1beczVms4Vg9FjKSZ6Ic3/QLyNmc6cZNUes2PRIB3Ugrkegs0tKYbtwUfd3Us5FgFPAqEiLBY5QPjr5+VOksUrQS6VznIWUTtCoJchCm9dryrn3pVJyMJYmEKwa8HnCBUMF9koQ2TMZyxe0x4Ne9ovzuNsV6BKj/WIG/vn8AAPZ2tr0keEwBooLb5vNMwFbAWGwVXIcAAGxxe0mOOoKL5i0A4PC0Uc69PA4BAPe99lpByGPBY9ZdZ02OAdVUbvoFKB6ygXWbwtuMEoq7lNtDEko90hEoOTlreMfUChiVBaq3Pz0Mv4GqOV8g6uDKXnQ7vjrfx2A0RZ4JbyCGskDFkbJnkmAucF3E8W7lNCue31bGJomEajCUltTawDcNTtlHJvAT8vcIyNmcDUbTjQSgqW/LgsRVhgej6XITBBSw64ES9TLS2zI1C0KVkFPAY1LMXHddRCrXAR1E90bVe0ElAmWb7jeQZwJ626beokivY9tr12wyof2mfAI3+guOJa+HIwAAAABJRU5ErkJggg=="
+// Sprites pixel-art de 34x42. Los genera scripts/generar-sprite-oso.py, que es
+// la fuente de verdad; esto es solo su salida embebida para no pedir archivos.
+const SPRITE_IDLE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAqCAYAAADWFImvAAADJklEQVR42u1YMWgTURj+LhwZHIM6lGIgc8GhGXKDQztIEQrpIgWl2OBiySCOIZirhIzSIehSmiIK4qJQCIdDHRySIQ6FdOjQwokcNEqgS4ci1CG8y3sv77/37tqKgz8E3l3/973vf+/7//dfgf/2j5qlenktc/Ncfnc6HFhJFzHBs1WT3IWpCTDXw3kSMqZ4qahJvaPheOLClDIyKuK4eCkqEjZJNVn+ra43lO9VJHg8UiNssso5n8vAd8oAgP5iXnskMzs9AEC20yTxXC8ItWJRW8lPvvHgeTi+4xSM9fG10w3HP9+9EEiMdDImQh4Nc05KQvZnOAxXtpScUq4XTJBRRRh3R2Q8fje0dWR1vaGN1JQEs1atoqwjlq4GUGSSWKtWIQujFacQ1btn4bhaSJMLRvnJR6KtIwDgO+UwZevdM5wc7uPkcB9z7V1hMZmEyo/H0oo1KsK59i6KB8coHhwDgJKMqZ/K7Cht9BfzYWECgC/35sPxXHuXBKX8+ot5rKKBVq0ycW8pd+R0OLBatYpA4jJsZqdHCtY2AagW0qhzUbKov23cF94tLQOzCr9qIQ0/ST9CZQ47a56AU2qG487WWIyzTz9MZA2VMVoiVBovLReFZ6fUFEgAwMf3n4zSNlbWRJGQdyLKL8q0RNj9w+4gPtLbj14Jvvwz82Nzdd2dkVgZiOtBOKa97TVh8b3ttVjHEUsjUZpRbT+/E3F6XDtp5+07ZWz4o5v4+8uHuPXs7ejGdcrIdpqxvwgsisDW58nKWbo7D3dhCr5TFlqB19d/48kvW2gBsp0mXC8gcWRCVtS1zy/G9xdx+xEKh6+yVpLe4yKNEdWjxK4jV2WCWHmRUf2JLmp5t3SYiSvrX9kRAMhNjzvtox/D2Oev0waFb1NO7Jl3znaaRl97/FeeDh8IzEq86wXgyzojo2uaZBKuF+DN44xeI6fDgbWy2Rf+uLLZn/joMhGgikQUfmRl5SsfqzGmGSBnGl+4VPjKo6EuqiQkVPMofNsUUBYaEzF/bExLsi8T5JXUkdz0+P8b7Od6gYIELregqYR2Eb8LNUaU0JL68fYH5cMFnBTd/fQAAAAASUVORK5CYII="
+const SPRITE_WAVE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAqCAYAAADWFImvAAADRUlEQVR42u1YMWjbQBR9MiZDR9N2MAaDZ0OHeLCGDvFQQiCQQCiBQqhNlgYPnU2o5WIyZzDtYpIQKIQuCQSCyOAMHewhHgLOkCEBQRHELYYsGULBHcqX70530kkuoUM/GEvy///e3X/37svAf/tHzZA9fJJ6Phaf3Y+GRtxBdPIlZUHWfNqXzLIxjgNGN18iKOj8ZjQJnE9LZ6aacdR8CdVMKEgWLH7KjS3pcxkINp+SIxQscy7kUnDMKgBgsFgILUn++BwAkO22lPks2/W4YqiWkg1+9uaDd/3SLGrz41u3513/+PKRA/GHJxMgytKQc1wQoj/lobyiJcQtZdmuD4xshlFXRMzHrkaojpQbW6Ez1QVBtluvSXXECNMAFZg4tluvKYXRiCJEzd6Dd71ZnFEOGOQnliRURwDAMavelm32HnB3fYm760vMnXS4wUQQMj82VyhZg2Y4d9LB0tUtlq5uAUAKRtdPpsaJIG6IwnW2UPI+QabyGywWQCq8v5731Fh66BGjd+u1cRl/j6is2u6v57nvtfZgnNRJsFmcQVOY3dlCCf3t19yz5VVgVuK3WZyBE6cfUe0cqjULwKy0vOvuzoSMs++/+naNZbveKrC21h7AiNNPLK8ucfdmpcWBAIDDgyPptiV+sCDuR0MjEbXOIghxJYL8yG6+j7hvre1L5w+dQexMX7z9xPmy9+RHsaKIsSCUu0bVX1o2uDJd7G1wg1/sbWipaGSyhnFGtvzsSogg1P2rqy6NrPUT5X/byaCfXsHhwRH66RVsOxmfjLPxO6cd3+8E2FBJ785pxweu8qoEaz4Nx6xyrcDnp7/w7meSawGy3RYs25XmYVsEOpGNoGOfHYwNjtqPqPJIgUTpPaZpjGjwcmOL60+SeCSjzow9y1gyc0Cy3RbC+pOwWYurRVwRd5B4n3iM1Qh6S1QKWi6TUqqfTv1lv+kIW1IFgu5ZMNluS+ttj33L07VQslq2C1YNCQwNprIoIDiO3I+Gxlp74OsTxJcunUGigpCeNSypqK6kMXEGcMxq4PuMsjSqgDggosRpC5pIZCIxWzbikugLuPociWq5zOT/DfpYtisBEZGsYSYj8jR+UzVGMiJP48fabxZ5KX8RopfdAAAAAElFTkSuQmCC"
 
-const SPRITE_W = 32
-const SPRITE_H = 34
+const SPRITE_W = 34
+const SPRITE_H = 42
 
-// Píxeles de "dato" que titilan sobre el pelaje, en porcentaje del sprite.
-const DATA_PIXELS = [
-  { x: 15.62, y: 23.53 },
-  { x: 78.12, y: 17.65 },
-  { x: 9.38, y: 44.12 },
-  { x: 84.38, y: 50.0 },
-  { x: 15.62, y: 70.59 },
-  { x: 81.25, y: 73.53 },
-  { x: 28.12, y: 85.29 },
-  { x: 68.75, y: 85.29 },
-]
-
-// Segundos que tarda en cruzar la pantalla de un lado al otro.
-const CROSSING_SECONDS = 26
-
-// Ancho del oso en escritorio.
-const BEAR_W = 84
+const BEAR_W = 96
 const BEAR_H = Math.round((BEAR_W * SPRITE_H) / SPRITE_W)
+
+// Cada cuánto saluda, y cuánto dura el saludo.
+const GREETING_EVERY_MS = 9000
+const GREETING_LASTS_MS = 2600
 
 interface OsoMascotaProps {
   onChatOpen: () => void
 }
 
 export function OsoMascota({ onChatOpen }: OsoMascotaProps) {
-  const [maxX, setMaxX] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
+  const [isWaving, setIsWaving] = useState(false)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
-    const measure = () => setMaxX(Math.max(0, window.innerWidth - BEAR_W - 48))
-    measure()
-    window.addEventListener("resize", measure)
-    return () => window.removeEventListener("resize", measure)
-  }, [])
+    if (prefersReducedMotion) return
+
+    let stopWaving: ReturnType<typeof setTimeout>
+    const startWaving = setInterval(() => {
+      setIsWaving(true)
+      stopWaving = setTimeout(() => setIsWaving(false), GREETING_LASTS_MS)
+    }, GREETING_EVERY_MS)
+
+    return () => {
+      clearInterval(startWaving)
+      clearTimeout(stopWaving)
+    }
+  }, [prefersReducedMotion])
 
   const goToContact = () => {
     document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth" })
   }
 
-  const still = prefersReducedMotion || isPaused
-
   return (
-    <div className="pointer-events-none fixed bottom-0 left-0 z-40 hidden w-full sm:block">
-      <motion.div
-        className="w-fit"
-        animate={
-          prefersReducedMotion || isPaused
-            ? {}
-            : {
-                x: [0, maxX, 0],
-                transition: {
-                  duration: CROSSING_SECONDS,
-                  repeat: Infinity,
-                  ease: "linear",
-                },
-              }
-        }
-        style={prefersReducedMotion ? { transform: "translateX(24px)" } : undefined}
-        onHoverStart={() => setIsPaused(true)}
-        onHoverEnd={() => setIsPaused(false)}
-      >
-        <div className="pointer-events-auto relative flex w-fit flex-col items-center gap-1 pb-3">
-          {/* El botón de contacto viaja sobre la cabeza del oso */}
-          <div className="relative z-10">
-            <SpeedDial onChatOpen={onChatOpen} inline />
-          </div>
+    <div className="pointer-events-none fixed bottom-4 left-4 z-40 hidden sm:block lg:left-8">
+      <div className="pointer-events-auto flex flex-col items-center gap-1">
+        {/* El botón de contacto va sobre la cabeza del oso */}
+        <SpeedDial onChatOpen={onChatOpen} inline />
 
-          <motion.button
-            type="button"
-            onClick={goToContact}
-            onFocus={() => setIsPaused(true)}
-            onBlur={() => setIsPaused(false)}
-            className="group relative block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#11B30B] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-            aria-label="Hablar con nosotros: ir a la sección de contacto"
-            // Camina mirando a la derecha en la ida y a la izquierda en la vuelta.
-            animate={
-              still
-                ? {}
-                : {
-                    scaleX: [1, 1, -1, -1],
-                    y: [0, -3, 0],
-                    transition: {
-                      scaleX: {
-                        duration: CROSSING_SECONDS,
-                        times: [0, 0.499, 0.5, 1],
-                        repeat: Infinity,
-                        ease: "linear",
-                      },
-                      y: { duration: 0.5, repeat: Infinity, ease: "easeInOut" },
-                    },
-                  }
-            }
-          >
-            <span className="relative block" style={{ width: BEAR_W, height: BEAR_H }}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- data URI: sin red ni optimización que aplicar */}
-              <img
-                src={SPRITE}
-                alt=""
-                width={BEAR_W}
-                height={BEAR_H}
+        <button
+          type="button"
+          onClick={goToContact}
+          // Saluda también al pasarle el mouse: el saludo es la invitación a
+          // hacerle clic, así que responder al puntero lo hace descubrible.
+          onMouseEnter={() => setIsWaving(true)}
+          onMouseLeave={() => setIsWaving(false)}
+          onFocus={() => setIsWaving(true)}
+          onBlur={() => setIsWaving(false)}
+          className="relative block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3FE0D0] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+          aria-label="Hablar con nosotros: ir a la sección de contacto"
+        >
+          <AnimatePresence>
+            {isWaving && (
+              <motion.span
+                initial={{ opacity: 0, y: 6, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.9 }}
+                transition={{ duration: 0.18 }}
+                className="absolute -top-2 left-full ml-1 -translate-y-full whitespace-nowrap rounded-md border-2 border-[#3FE0D0] bg-black px-3 py-1.5 text-sm font-bold text-[#3FE0D0]"
                 aria-hidden="true"
-                // Sin esto el navegador suaviza el sprite y deja de verse retro.
-                style={{ imageRendering: "pixelated" }}
-                className="block h-full w-full drop-shadow-[0_0_10px_rgba(17,179,11,0.3)]"
-              />
-              {DATA_PIXELS.map((pixel, index) => (
-                <motion.span
-                  key={`${pixel.x}-${pixel.y}`}
-                  className="absolute rounded-[1px] bg-[#6EFF5A]"
-                  style={{
-                    left: `${pixel.x}%`,
-                    top: `${pixel.y}%`,
-                    width: `${100 / SPRITE_W}%`,
-                    height: `${100 / SPRITE_H}%`,
-                  }}
-                  animate={
-                    prefersReducedMotion
-                      ? { opacity: 0.9 }
-                      : {
-                          opacity: [0.25, 1, 0.25],
-                          transition: {
-                            duration: 1.6,
-                            repeat: Infinity,
-                            delay: index * 0.18,
-                            ease: "easeInOut",
-                          },
-                        }
-                  }
-                />
-              ))}
-            </span>
+              >
+                ¡Hey! Hola
+              </motion.span>
+            )}
+          </AnimatePresence>
 
-            <span
-              className="pointer-events-none absolute -left-2 top-1/2 -translate-x-full -translate-y-1/2 whitespace-nowrap rounded-md border-2 border-black bg-white px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-black opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
-              aria-hidden="true"
-            >
-              ¡Hablemos!
-            </span>
-          </motion.button>
-        </div>
-      </motion.div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- data URI: no hay red ni optimización que aplicar */}
+          <img
+            src={isWaving && !prefersReducedMotion ? SPRITE_WAVE : SPRITE_IDLE}
+            alt=""
+            width={BEAR_W}
+            height={BEAR_H}
+            aria-hidden="true"
+            // Sin esto el navegador suaviza el sprite y deja de verse retro.
+            style={{ imageRendering: "pixelated" }}
+            className="block drop-shadow-[0_0_14px_rgba(63,224,208,0.28)]"
+          />
+        </button>
+      </div>
     </div>
   )
 }

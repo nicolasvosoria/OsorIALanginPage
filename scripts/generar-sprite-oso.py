@@ -1,147 +1,194 @@
-"""Diseño y render del sprite del oso retro de OsorIA.
+"""Genera el sprite pixel-art del oso mascota de OsorIA.
 
-El sprite se genera con formas (elipses) y un paso automático de contorno,
-en vez de dibujarse a mano: así la silueta queda redonda y el borde grueso
-y parejo, como en la referencia pixel-art.
+Oso chibi con armadura tecnológica, de frente. Dos fotogramas:
+  idle  — quieto, las dos patas abajo
+  wave  — con la pata derecha levantada, saludando
+
+El sprite se dibuja con elipses y un paso automático de contorno, no a mano:
+así la silueta queda redonda y el borde grueso y parejo.
+
+Uso:
+    python3 scripts/generar-sprite-oso.py            # renderiza PNG de revisión
+    python3 scripts/generar-sprite-oso.py --datauri  # imprime los data URI
 """
 from PIL import Image
+import base64
+import io
 import sys
 
-W, H = 32, 34
+W, H = 34, 42
 
 PALETTE = {
-    ".": None,              # transparente
-    "o": (32, 18, 12),      # contorno
-    "d": (126, 78, 40),     # sombra
-    "b": (176, 118, 62),    # cuerpo
-    "l": (212, 156, 94),    # luz
-    "c": (243, 220, 180),   # crema (hocico, panza, interior de oreja)
-    "p": (26, 122, 30),     # interior de oreja, verde apagado
-    "k": (24, 16, 12),      # ojo y nariz
+    ".": None,
+    "o": (10, 18, 22),      # contorno
+    "F": (86, 56, 30),      # pelaje sombra
+    "f": (138, 90, 48),     # pelaje
+    "L": (172, 118, 66),    # pelaje luz
+    "m": (219, 178, 128),   # hocico
+    "A": (40, 68, 78),      # armadura sombra
+    "a": (107, 147, 156),   # armadura
+    "H": (168, 204, 212),   # armadura luz
+    "g": (63, 224, 208),    # brillo cian
+    "G": (150, 255, 245),   # brillo cian intenso
+    "i": (79, 216, 232),    # iris
+    "k": (14, 34, 42),      # ojo oscuro
     "w": (255, 255, 255),   # brillo del ojo
-    "G": (110, 255, 90),    # dato verde
+    "n": (20, 20, 20),      # nariz
 }
-
-DATA_PIXELS = [(5, 8), (25, 6), (3, 15), (27, 17), (5, 24), (26, 25), (9, 29), (22, 29)]
 
 
 def blank():
     return [["." for _ in range(W)] for _ in range(H)]
 
 
-def ellipse(grid, cx, cy, rx, ry, ch, only_over=None):
+def ellipse(g, cx, cy, rx, ry, ch, clip_to=None):
     for y in range(H):
         for x in range(W):
             if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1.0:
-                if only_over is None or grid[y][x] in only_over:
-                    grid[y][x] = ch
+                if clip_to is None or g[y][x] in clip_to:
+                    g[y][x] = ch
 
 
-def rect(grid, x0, y0, x1, y1, ch):
-    for y in range(y0, y1 + 1):
-        for x in range(x0, x1 + 1):
-            if 0 <= x < W and 0 <= y < H:
-                grid[y][x] = ch
+def px(g, x, y, ch):
+    if 0 <= x < W and 0 <= y < H:
+        g[y][x] = ch
 
 
-def outline(grid):
-    """Cualquier pixel pintado que toque el vacío se convierte en contorno."""
-    solid = {(x, y) for y in range(H) for x in range(W) if grid[y][x] != "."}
-    edge = set()
-    for (x, y) in solid:
-        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            nx, ny = x + dx, y + dy
-            if not (0 <= nx < W and 0 <= ny < H) or grid[ny][nx] == ".":
-                edge.add((x, y))
-                break
+def outline(g):
+    """Todo pixel pintado que toque el vacío se vuelve contorno."""
+    edge = []
+    for y in range(H):
+        for x in range(W):
+            if g[y][x] == ".":
+                continue
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if not (0 <= nx < W and 0 <= ny < H) or g[ny][nx] == ".":
+                    edge.append((x, y))
+                    break
     for (x, y) in edge:
-        grid[y][x] = "o"
+        g[y][x] = "o"
 
 
-def build():
+def build(frame="idle"):
+    """Se dibuja de atrás hacia adelante: lo último tapa a lo anterior."""
     g = blank()
 
-    # --- orejas (van primero: la cabeza las recorta por dentro) -------------
-    ellipse(g, 9, 7, 4.2, 4.2, "b")
-    ellipse(g, 23, 7, 4.2, 4.2, "b")
-    ellipse(g, 9, 7, 2.0, 2.0, "p")
-    ellipse(g, 23, 7, 2.0, 2.0, "p")
+    # --- orejas -------------------------------------------------------------
+    ellipse(g, 7, 7, 4.6, 4.6, "f")
+    ellipse(g, 27, 7, 4.6, 4.6, "f")
+    ellipse(g, 7, 7, 2.2, 2.2, "F")
+    ellipse(g, 27, 7, 2.2, 2.2, "F")
+
+    # --- piernas y patas (asoman por debajo del cuerpo) ---------------------
+    for cx in (12, 22):
+        ellipse(g, cx, 37, 3.4, 4.2, "f")
+        ellipse(g, cx, 35, 3.0, 1.7, "a")     # rodillera
+        ellipse(g, cx, 39, 3.8, 2.0, "L")     # pata
+
+    # --- brazos (sobresalen del cuerpo por los lados) -----------------------
+    ellipse(g, 5, 31, 3.3, 5.4, "f")          # izquierdo, siempre abajo
+    ellipse(g, 5, 34, 3.1, 2.4, "L")
+    ellipse(g, 5, 28, 3.3, 1.7, "a")
+
+    if frame == "wave":
+        # derecho arriba: antebrazo vertical y pata abierta saludando
+        ellipse(g, 30, 24, 3.0, 5.2, "f")
+        ellipse(g, 30, 18, 3.2, 3.0, "L")
+        ellipse(g, 30, 27, 2.6, 1.5, "a")
+    else:
+        ellipse(g, 29, 31, 3.3, 5.4, "f")
+        ellipse(g, 29, 34, 3.1, 2.4, "L")
+        ellipse(g, 29, 28, 3.3, 1.7, "a")
 
     # --- cuerpo -------------------------------------------------------------
-    ellipse(g, 16, 25, 10.0, 8.0, "b")
-    # patas
-    ellipse(g, 10, 31, 3.6, 2.8, "b")
-    ellipse(g, 22, 31, 3.6, 2.8, "b")
-    # brazos
-    ellipse(g, 6, 24, 2.8, 4.0, "d")
-    ellipse(g, 26, 24, 2.8, 4.0, "d")
-    # panza
-    ellipse(g, 16, 26, 5.6, 5.2, "c")
+    ellipse(g, 17, 31, 9.0, 7.5, "f")
+    ellipse(g, 17, 30, 6.4, 5.8, "a")         # peto
+    ellipse(g, 17, 29, 4.8, 4.2, "H")
+    ellipse(g, 17, 32, 3.2, 2.6, "a")
+    for x in range(14, 21):
+        px(g, x, 33, "g")
+    px(g, 17, 26, "g")
 
-    # --- cabeza (encima del cuerpo) ----------------------------------------
-    ellipse(g, 16, 13, 11.0, 9.5, "b")
-    # luz en la frente
-    ellipse(g, 10, 9, 3.2, 2.4, "l")
+    # hombreras
+    ellipse(g, 8, 27, 3.5, 2.9, "a")
+    ellipse(g, 26, 27, 3.5, 2.9, "a")
+    ellipse(g, 8, 26, 2.3, 1.7, "H")
+    ellipse(g, 26, 26, 2.3, 1.7, "H")
 
-    # hocico
-    ellipse(g, 12, 18, 5.4, 3.8, "c")
-    # nariz
-    ellipse(g, 12, 16, 1.8, 1.3, "k")
-    # sonrisa
-    g[19][10] = "o"
-    g[20][11] = "o"
-    g[20][12] = "o"
-    g[20][13] = "o"
-    g[19][14] = "o"
+    # --- cabeza -------------------------------------------------------------
+    ellipse(g, 17, 15, 11.5, 10.0, "f")
 
-    # ojo grande con brillo, a la derecha (vista de 3/4)
-    ellipse(g, 22, 14, 3.2, 3.8, "k")
-    rect(g, 22, 12, 23, 13, "w")
+    # casco sobre la mitad superior
+    for y in range(H):
+        for x in range(W):
+            if g[y][x] == "f" and y <= 12 and ((x - 17) / 11.5) ** 2 + ((y - 15) / 10.0) ** 2 <= 1.0:
+                g[y][x] = "a"
+    ellipse(g, 17, 9, 6.0, 2.8, "H", clip_to="a")
+    for x in range(13, 22):
+        px(g, x, 7, "g")
+
+    # visores laterales
+    for cx in (7, 27):
+        ellipse(g, cx, 16, 2.0, 2.8, "a")
+        px(g, cx, 16, "g")
+
+    # --- ojos ---------------------------------------------------------------
+    for cx in (12, 22):
+        ellipse(g, cx, 16, 3.3, 3.7, "k")
+        ellipse(g, cx, 16, 2.3, 2.7, "i")
+        ellipse(g, cx, 17, 1.5, 1.5, "k")
+        px(g, cx - 1, 14, "w")
+        px(g, cx, 14, "w")
+
+    # --- hocico -------------------------------------------------------------
+    ellipse(g, 17, 21, 5.2, 3.4, "m")
+    # nariz como rectangulo: una elipse de este tamano rasteriza como cruz
+    for nx in range(16, 19):
+        px(g, nx, 19, "n")
+    px(g, 17, 20, "n")
+    # sonrisa: dos trazos que bajan desde debajo de la nariz
+    px(g, 15, 22, "o")
+    px(g, 16, 23, "o")
+    px(g, 17, 23, "o")
+    px(g, 18, 23, "o")
+    px(g, 19, 22, "o")
 
     outline(g)
     return ["".join(r) for r in g]
 
 
-def validate(sprite):
-    problems = []
-    for i, row in enumerate(sprite):
-        if len(row) != W:
-            problems.append(f"  fila {i}: {len(row)} px (esperado {W})")
-        for ch in row:
-            if ch not in PALETTE:
-                problems.append(f"  fila {i}: caracter desconocido {ch!r}")
-    if problems:
-        print("❌ sprite invalido:\n" + "\n".join(problems))
-        sys.exit(1)
-    print(f"✅ sprite valido: {W}x{len(sprite)} px")
-
-
-def render(sprite, scale=12, path="oso.png"):
+def to_image(sprite):
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    px = img.load()
+    p = img.load()
     for y, row in enumerate(sprite):
         for x, ch in enumerate(row):
             color = PALETTE[ch]
             if color:
-                px[x, y] = (*color, 255)
-    for (x, y) in DATA_PIXELS:
-        if 0 <= x < W and 0 <= y < H and sprite[y][x] in "bdl":
-            px[x, y] = (*PALETTE["G"], 255)
-    big = img.resize((W * scale, H * scale), Image.NEAREST)
-    bg = Image.new("RGBA", big.size, (0, 0, 0, 255))
-    bg.alpha_composite(big)
-    bg.save(path)
-    print(f"✅ render: {path} ({big.width}x{big.height})")
+                p[x, y] = (*color, 255)
+    return img
 
 
-def dump(sprite, path="sprite.txt"):
-    with open(path, "w") as fh:
-        fh.write("\n".join(sprite))
-    print(f"✅ filas guardadas en {path}")
+def data_uri(sprite):
+    buf = io.BytesIO()
+    to_image(sprite).save(buf, format="PNG", optimize=True)
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def preview(scale=10, path="oso.png"):
+    frames = [build("idle"), build("wave")]
+    imgs = [to_image(f).resize((W * scale, H * scale), Image.NEAREST) for f in frames]
+    gap = 24
+    canvas = Image.new("RGBA", (imgs[0].width * 2 + gap, imgs[0].height), (8, 12, 14, 255))
+    canvas.alpha_composite(imgs[0], (0, 0))
+    canvas.alpha_composite(imgs[1], (imgs[0].width + gap, 0))
+    canvas.convert("RGB").save(path)
+    print(f"✅ {path} — fotogramas idle y wave, {W}x{H} px cada uno")
 
 
 if __name__ == "__main__":
-    s = build()
-    validate(s)
-    render(s)
-    dump(s)
+    if "--datauri" in sys.argv:
+        for name in ("idle", "wave"):
+            print(f"{name}\t{data_uri(build(name))}")
+    else:
+        preview()
