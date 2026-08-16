@@ -17,9 +17,43 @@ comillas dobles: `"landingOsorIA".github_repos`.
 | Datos de GitHub cargados | ✅ 17 repos, 709 commits, 77 PRs, 111 ramas |
 | Alcance en personas calculado | ✅ 1.828 personas, 4.606 puntos de venta |
 | Sección de la landing conectada | ✅ lee de la base, sin cifras a mano |
+| Edge Function `sync-github` desplegada | ✅ verificada de punta a punta |
+| Cron diario `landingosoria-sync-github` | ✅ 6:30 UTC (1:30 a. m. Colombia) |
 | Copia de datos del proyecto viejo | ⛔ pendiente (falta acceso al origen) |
 | Corte de la app al proyecto nuevo | ⛔ pendiente (depende de la copia) |
-| Edge Function desplegada + cron | ⛔ pendiente (la carga inicial fue manual) |
+
+## Cómo está armado el sync automático
+
+`pg_cron` lee el secreto de Supabase Vault y llama la Edge Function con
+`net.http_post`. La función valida ese secreto contra su propia variable de
+entorno antes de hacer nada; sin él responde 401.
+
+El secreto **no está escrito en ningún archivo del repositorio**: vive en Vault
+(`github_sync_cron_secret`) y como secret de la función
+(`GITHUB_SYNC_CRON_SECRET`). Para rotarlo hay que cambiar los dos a la vez.
+
+Disparar el sync a mano:
+
+```sql
+select net.http_post(
+  url := 'https://feqsjdhcsrksvrfsjsfv.supabase.co/functions/v1/sync-github',
+  headers := jsonb_build_object(
+    'Content-Type', 'application/json',
+    'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets
+                      where name = 'github_sync_cron_secret')),
+  body := '{}'::jsonb);
+
+-- y revisar cómo fue
+select * from "landingOsorIA".github_sync_runs order by id desc limit 5;
+```
+
+**Rotar el token de GitHub** (el actual quedó expuesto en un chat):
+
+```bash
+supabase secrets set GITHUB_TOKEN=<token-nuevo> --project-ref feqsjdhcsrksvrfsjsfv
+```
+
+No hace falta redesplegar la función: los secrets se leen en cada invocación.
 
 ## Las cifras que muestra la landing
 
