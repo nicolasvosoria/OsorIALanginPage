@@ -1,9 +1,8 @@
 "use client"
 
 import { motion, useMotionValue, useSpring } from "framer-motion"
-import { ArrowRight, Sparkles, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon, Trophy } from "lucide-react"
+import { ArrowRight, Workflow, BarChart3, ShieldCheckIcon, Users2, Puzzle, HeadsetIcon, Trophy } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
 import { Footer } from "@/components/footer"
 import { Preloader } from "@/components/preloader"
 import Image from "next/image"
@@ -17,6 +16,10 @@ import { ContactForm } from "@/components/contact-form"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ChatBot } from "@/components/chat-bot"
 import { SpeedDial } from "@/components/speed-dial"
+import { ImpactMetrics } from "@/components/impact-metrics"
+import { WhyUs } from "@/components/why-us"
+import { ProjectsCarousel } from "@/components/projects-carousel"
+import { IaArcade } from "@/components/ia-arcade"
 
 const blink = {
   "0%, 100%": { opacity: 1 },
@@ -24,7 +27,6 @@ const blink = {
 }
 
 export default function Home() {
-  const router = useRouter()
   const targetRef = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -169,7 +171,7 @@ export default function Home() {
                 size="lg"
                 variant="ghost"
                 className="mt-4 h-auto min-h-[4rem] w-full max-w-full whitespace-normal break-words border-2 border-white bg-white px-4 py-4 text-base leading-snug text-black transition-all duration-300 ease-in-out hover:bg-transparent hover:text-white sm:mt-8 sm:min-h-0 sm:w-auto sm:px-6 sm:text-lg"
-                onClick={() => router.push("/ai-demo")}
+                onClick={() => document.getElementById("arcade")?.scrollIntoView({ behavior: "smooth" })}
               >
                 <span className="min-w-0 text-center sm:text-left">Mira lo que puede generar la inteligencia artificial</span>
                 <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0" />
@@ -209,41 +211,9 @@ export default function Home() {
                 artificial. Nosotros llegamos para cerrar esa brecha y desbloquear su verdadero potencial.
               </motion.p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
-                className="p-6 text-center"
-              >
-                <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">99.8%</div>
-                <p className="text-gray-400 text-base sm:text-lg">Precisión en análisis de datos</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                viewport={{ once: true }}
-                className="p-6 text-center"
-              >
-                <Puzzle className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">+200</div>
-                <p className="text-gray-400 text-base sm:text-lg">Modelos personalizados entrenados para empresas</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                viewport={{ once: true }}
-                className="p-6 text-center"
-              >
-                <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 mb-4 mx-auto" style={{ color: "#11B30B" }} />
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">+12.000</div>
-                <p className="text-gray-400 text-base sm:text-lg">Procesos automatizados</p>
-              </motion.div>
-            </div>
+            {/* Métricas reales, sincronizadas a diario desde GitHub y desde
+                nuestras bases de datos. No se escriben a mano. */}
+            <ImpactMetrics />
           </motion.div>
         </section>
 
@@ -346,6 +316,17 @@ export default function Home() {
               ))}
             </div>
           </motion.div>
+        </section>
+
+        {/* SECCIÓN 5.5: Por qué trabajar con nosotros */}
+        <WhyUs />
+
+        {/* SECCIÓN 5.6: Carrusel con los proyectos que hemos construido */}
+        <ProjectsCarousel />
+
+        {/* SECCIÓN 5.7: IA Arcade — se pausa solo cuando sale de pantalla */}
+        <section id="arcade" className="py-12 sm:py-16">
+          <IaArcade />
         </section>
 
         {/* SECCIÓN 6: CTA Section with Contact Form - Ahora en dos columnas */}
