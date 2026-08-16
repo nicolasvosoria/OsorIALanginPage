@@ -20,6 +20,7 @@ import { ImpactMetrics } from "@/components/impact-metrics"
 import { WhyUs } from "@/components/why-us"
 import { ProjectsCarousel } from "@/components/projects-carousel"
 import { IaArcade } from "@/components/ia-arcade"
+import { OsoMascota } from "@/components/oso-mascota"
 
 const blink = {
   "0%, 100%": { opacity: 1 },
@@ -368,6 +369,9 @@ export default function Home() {
             </div>
           </motion.div>
         </section>
+
+        {/* El oso camina por el borde inferior y lleva al formulario de contacto */}
+        <OsoMascota />
 
         <SpeedDial onChatOpen={() => setIsChatOpen(true)} />
         <ChatBot isOpenExternal={isChatOpen} onOpenChange={setIsChatOpen} showFloatingButton={false} />
