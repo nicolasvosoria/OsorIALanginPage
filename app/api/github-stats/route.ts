@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server"
-import {
-  landingSupabase,
-  landingSupabaseAdmin,
-  type GithubStats,
-  type ImpactStats,
-} from "@/lib/supabase-landing"
+import { landingSupabaseAdmin, type GithubStats, type ImpactStats } from "@/lib/supabase-landing"
 
 // El sync corre una vez al día, así que media hora de caché en el edge sobra.
 const CACHE_CONTROL = "public, s-maxage=1800, stale-while-revalidate=3600"
@@ -13,11 +8,11 @@ const CACHE_CONTROL = "public, s-maxage=1800, stale-while-revalidate=3600"
 const LANGUAGE_LIMIT = 6
 
 export async function GET() {
-  const client = landingSupabase ?? landingSupabaseAdmin
+  const client = landingSupabaseAdmin
 
   if (!client) {
     return NextResponse.json(
-      { error: "Supabase de la landing no está configurado" },
+      { error: "Falta LANDING_SUPABASE_SERVICE_ROLE_KEY" },
       { status: 500 },
     )
   }

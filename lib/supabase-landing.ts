@@ -7,19 +7,20 @@ const LANDING_SCHEMA = "landingOsorIA"
 const LANDING_SUPABASE_URL =
   process.env.NEXT_PUBLIC_LANDING_SUPABASE_URL || "https://feqsjdhcsrksvrfsjsfv.supabase.co"
 
-const anonKey = process.env.NEXT_PUBLIC_LANDING_SUPABASE_ANON_KEY
 const serviceKey = process.env.LANDING_SUPABASE_SERVICE_ROLE_KEY
 
 /**
- * Cliente de solo lectura para lo que es público (contador de GitHub, proyectos
- * publicados). Las políticas RLS ya limitan qué filas salen con esta llave.
- */
-export const landingSupabase = anonKey
-  ? createClient(LANDING_SUPABASE_URL, anonKey, { db: { schema: LANDING_SCHEMA } })
-  : null
-
-/**
- * Cliente de servidor. Nunca debe importarse desde un componente cliente.
+ * Único cliente, y es de servidor. Nunca debe importarse desde un componente
+ * cliente ni exponerse con NEXT_PUBLIC_.
+ *
+ * Deliberadamente NO hay cliente con llave anónima. En este proyecto conviven
+ * schemas con tablas sin RLS —`OsoIADataAnalisis.cliente` tiene 1.685 personas
+ * con nombre, documento, teléfono y correo— y todos están expuestos en
+ * PostgREST. Publicar la llave anónima en el navegador dejaría esos datos al
+ * alcance de cualquiera que abra el código fuente de la landing.
+ *
+ * Por eso la página nunca habla con Supabase: pide los datos a /api/*, y esas
+ * rutas devuelven solo los agregados públicos.
  */
 export const landingSupabaseAdmin = serviceKey
   ? createClient(LANDING_SUPABASE_URL, serviceKey, {
