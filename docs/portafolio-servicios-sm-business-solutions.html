@@ -1,0 +1,896 @@
+<title>Portafolio OsorIA para SM Business</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+:root{
+  --ground:#FAFAF7;
+  --raised:#FFFFFF;
+  --ink:#0C0D0C;
+  --ink-soft:#3D423C;
+  --muted:#6B7169;
+  --rule:#DDDDD4;
+  --rule-soft:#EAEAE2;
+  --accent:#1B6E45;
+  --accent-soft:#E4F0E8;
+  --invert-bg:#0C0D0C;
+  --invert-fg:#FAFAF7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B0C0B;
+    --raised:#131513;
+    --ink:#EFEFEA;
+    --ink-soft:#C6C9C1;
+    --muted:#8F968C;
+    --rule:#242822;
+    --rule-soft:#1B1E1A;
+    --accent:#66CF95;
+    --accent-soft:#16261D;
+    --invert-bg:#EFEFEA;
+    --invert-fg:#0B0C0B;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B0C0B;
+  --raised:#131513;
+  --ink:#EFEFEA;
+  --ink-soft:#C6C9C1;
+  --muted:#8F968C;
+  --rule:#242822;
+  --rule-soft:#1B1E1A;
+  --accent:#66CF95;
+  --accent-soft:#16261D;
+  --invert-bg:#EFEFEA;
+  --invert-fg:#0B0C0B;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{
+  max-width:1140px;
+  margin:0 auto;
+  padding:0 24px 96px;
+}
+
+/* ---------- masthead ---------- */
+.mast{
+  padding:56px 0 40px;
+  border-bottom:2px solid var(--ink);
+}
+.mark{
+  display:inline-flex;
+  align-items:baseline;
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:-.01em;
+}
+.mark b{
+  background:var(--invert-bg);
+  color:var(--invert-fg);
+  padding:2px 7px;
+  font-weight:800;
+}
+.mark span{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-weight:400;
+  font-size:14px;
+  color:var(--muted);
+  margin-left:4px;
+}
+.eyebrow{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+h1{
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:800;
+  font-size:clamp(2.3rem,6.2vw,4.15rem);
+  line-height:1.02;
+  letter-spacing:-.035em;
+  text-wrap:balance;
+  margin:26px 0 0;
+  max-width:16ch;
+}
+.mast-for{
+  margin:26px 0 0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 28px;
+  align-items:baseline;
+}
+.for-label{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.for-name{
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:700;
+  font-size:1.06rem;
+  letter-spacing:-.01em;
+}
+.lede{
+  margin:30px 0 0;
+  max-width:62ch;
+  font-size:1.2rem;
+  line-height:1.55;
+  color:var(--ink-soft);
+}
+.lede strong{color:var(--ink);font-weight:600}
+
+/* ---------- index ---------- */
+.index{
+  margin:40px 0 0;
+  padding:26px 0 4px;
+  border-top:1px solid var(--rule);
+}
+.index ol{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:2px 26px;
+}
+.index a{
+  display:flex;
+  gap:12px;
+  align-items:baseline;
+  padding:7px 0;
+  color:var(--ink-soft);
+  text-decoration:none;
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:.94rem;
+  border-bottom:1px solid var(--rule-soft);
+}
+.index a:hover,.index a:focus-visible{color:var(--accent)}
+.index em{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-style:normal;
+  font-size:.8rem;
+  color:var(--muted);
+  min-width:1.6em;
+}
+
+/* ---------- sections ---------- */
+section{
+  padding:52px 0 0;
+  scroll-margin-top:20px;
+}
+.svc{
+  display:grid;
+  grid-template-columns:78px minmax(0,1fr);
+  gap:0 28px;
+  border-top:1px solid var(--rule);
+  padding-top:34px;
+}
+.rail{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.82rem;
+  color:var(--muted);
+  padding-top:.55rem;
+  letter-spacing:.04em;
+}
+.rail b{
+  display:block;
+  font-weight:700;
+  color:var(--ink);
+  font-size:1.5rem;
+  letter-spacing:-.03em;
+  line-height:1;
+}
+.rail i{
+  display:block;
+  font-style:normal;
+  margin-top:8px;
+  font-size:.68rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+h2{
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:800;
+  font-size:clamp(1.55rem,3.2vw,2.1rem);
+  line-height:1.1;
+  letter-spacing:-.028em;
+  text-wrap:balance;
+  margin:0 0 14px;
+  max-width:22ch;
+}
+h3{
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:700;
+  font-size:1.02rem;
+  letter-spacing:-.005em;
+  margin:26px 0 8px;
+}
+.kicker{
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:600;
+  font-size:1.05rem;
+  color:var(--ink-soft);
+  margin:0 0 18px;
+  max-width:60ch;
+}
+p{margin:0 0 14px;max-width:66ch}
+.body-col{min-width:0}
+
+ul{margin:0 0 16px;padding:0;list-style:none;max-width:66ch}
+ul li{
+  position:relative;
+  padding-left:20px;
+  margin-bottom:9px;
+}
+ul li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.72em;
+  width:8px;
+  height:1.5px;
+  background:var(--accent);
+}
+ul li strong{font-weight:600}
+
+/* deliverable line */
+.deliv{
+  margin:20px 0 0;
+  padding:14px 0 0;
+  border-top:1px solid var(--rule-soft);
+  font-size:.95rem;
+  color:var(--ink-soft);
+  max-width:66ch;
+}
+.deliv span{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.68rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  display:block;
+  margin-bottom:5px;
+}
+
+/* evidence block — the distinctive device */
+.evid{
+  margin:22px 0 0;
+  background:var(--accent-soft);
+  border-left:3px solid var(--accent);
+  padding:16px 20px;
+  max-width:66ch;
+}
+.evid span{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.68rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent);
+  display:block;
+  margin-bottom:6px;
+  font-weight:700;
+}
+.evid p{margin:0;font-size:.96rem;color:var(--ink-soft);max-width:none}
+.evid p + p{margin-top:9px}
+
+/* support sub-blocks */
+.tiers{
+  display:grid;
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  margin:18px 0 0;
+  max-width:66ch;
+}
+.tier{
+  background:var(--raised);
+  padding:14px 18px;
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  gap:16px;
+  align-items:baseline;
+}
+.tier b{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.74rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+.tier p{margin:0;font-size:.95rem;color:var(--ink-soft);max-width:none}
+
+/* tables */
+.tbl-scroll{overflow-x:auto;margin:20px 0 0;-webkit-overflow-scrolling:touch}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:520px;
+  font-size:.95rem;
+}
+th{
+  text-align:left;
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.68rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:400;
+  padding:0 18px 10px 0;
+  border-bottom:1.5px solid var(--ink);
+  vertical-align:bottom;
+}
+td{
+  padding:12px 18px 12px 0;
+  border-bottom:1px solid var(--rule-soft);
+  vertical-align:top;
+  color:var(--ink-soft);
+}
+td:first-child{color:var(--ink)}
+tr td:last-child,tr th:last-child{padding-right:0}
+td.num{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-variant-numeric:tabular-nums;
+  color:var(--muted);
+  font-size:.85rem;
+  width:2.6em;
+}
+td.svc-name{font-family:Archivo,system-ui,sans-serif;font-weight:600;color:var(--ink)}
+tr.flag td{background:var(--accent-soft)}
+tr.flag td.svc-name{color:var(--accent)}
+
+/* principles */
+.prins{
+  counter-reset:p;
+  margin:8px 0 0;
+  max-width:66ch;
+}
+.prin{
+  border-top:1px solid var(--rule-soft);
+  padding:18px 0;
+  display:grid;
+  grid-template-columns:40px minmax(0,1fr);
+  gap:18px;
+}
+.prin::before{
+  counter-increment:p;
+  content:counter(p,decimal-leading-zero);
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.8rem;
+  color:var(--muted);
+  padding-top:.28em;
+}
+.prin h4{
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  margin:0 0 5px;
+}
+.prin p{margin:0;font-size:.96rem;color:var(--ink-soft);max-width:none}
+
+/* stat strip */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  margin:24px 0 0;
+}
+.stat{background:var(--raised);padding:20px 18px}
+.stat b{
+  display:block;
+  font-family:Archivo,system-ui,sans-serif;
+  font-weight:800;
+  font-size:1.9rem;
+  letter-spacing:-.035em;
+  font-variant-numeric:tabular-nums;
+  line-height:1;
+}
+.stat span{
+  display:block;
+  margin-top:8px;
+  font-size:.87rem;
+  color:var(--muted);
+  line-height:1.4;
+}
+
+/* email block */
+.mail{
+  margin:30px 0 0;
+  border:2px solid var(--ink);
+  background:var(--raised);
+}
+.mail-head{
+  background:var(--invert-bg);
+  color:var(--invert-fg);
+  padding:14px 24px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 18px;
+  align-items:baseline;
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.74rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.mail-body{padding:28px 24px 30px}
+.mail-meta{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.85rem;
+  border-bottom:1px solid var(--rule);
+  padding-bottom:16px;
+  margin-bottom:22px;
+  color:var(--ink-soft);
+}
+.mail-meta div{display:flex;gap:12px;padding:3px 0}
+.mail-meta i{
+  font-style:normal;
+  color:var(--muted);
+  min-width:5.2em;
+  text-transform:uppercase;
+  font-size:.72rem;
+  letter-spacing:.1em;
+  padding-top:.2em;
+}
+.mail-body p{max-width:64ch;font-size:1rem}
+.mail-body p strong{font-weight:600;color:var(--ink)}
+.sig{
+  margin-top:26px;
+  padding-top:18px;
+  border-top:1px solid var(--rule);
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.85rem;
+  line-height:1.75;
+  color:var(--muted);
+}
+.sig b{
+  display:block;
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:1rem;
+  color:var(--ink);
+  letter-spacing:-.01em;
+}
+
+/* closing */
+.close{
+  margin:60px 0 0;
+  border-top:2px solid var(--ink);
+  padding-top:24px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px 28px;
+  align-items:baseline;
+  justify-content:space-between;
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.76rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+@media (max-width:720px){
+  body{font-size:16.5px}
+  .wrap{padding:0 18px 72px}
+  .svc{grid-template-columns:1fr;gap:0}
+  .rail{display:flex;gap:12px;align-items:baseline;padding:0 0 12px}
+  .rail b{font-size:1.15rem}
+  .rail i{margin-top:0}
+  .tier{grid-template-columns:1fr;gap:4px}
+  .prin{grid-template-columns:1fr;gap:6px}
+  .prin::before{padding-top:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="mark"><b>OsorIA</b><span>.tech</span></div>
+  <p class="eyebrow" style="margin:30px 0 0">Portafolio de servicios · Agosto 2026</p>
+  <h1>Lo que podemos construir juntos</h1>
+  <div class="mast-for">
+    <span class="for-label">Preparado para</span>
+    <span class="for-name">SM BUSINESS SOLUTIONS S.A.S.</span>
+  </div>
+  <p class="lede">OsorIA.tech <strong>construye, integra y sostiene</strong> software con inteligencia artificial: desde el modelo predictivo y la automatización que elimina el trabajo manual, hasta la página web, la aplicación móvil y el soporte del sistema que queda funcionando después.</p>
+
+  <div class="stats">
+    <div class="stat"><b>3,24 M</b><span>empresas en Colombia</span></div>
+    <div class="stat"><b>98 %</b><span>valora la transformación digital</span></div>
+    <div class="stat"><b>58 %</b><span>realmente actúa</span></div>
+    <div class="stat"><b>5 %</b><span>usa inteligencia artificial</span></div>
+  </div>
+  <p style="margin:16px 0 0;font-size:.94rem;color:var(--muted);max-width:60ch">Entre el 58 % que actúa y el 5 % que llega a la IA está la brecha que esta alianza puede ocupar.</p>
+</header>
+
+<nav class="index" aria-label="Índice de servicios">
+  <p class="eyebrow" style="margin:0 0 16px">Nueve líneas de servicio</p>
+  <ol>
+    <li><a href="#s1"><em>01</em> Soluciones con IA a la medida</a></li>
+    <li><a href="#s2"><em>02</em> Automatización de procesos</a></li>
+    <li><a href="#s3"><em>03</em> Datos y analítica predictiva</a></li>
+    <li><a href="#s4"><em>04</em> Desarrollo web</a></li>
+    <li><a href="#s5"><em>05</em> Aplicaciones móviles</a></li>
+    <li><a href="#s6"><em>06</em> Sistemas de gestión</a></li>
+    <li><a href="#s7"><em>07</em> WhatsApp API y chatbots</a></li>
+    <li><a href="#s8"><em>08</em> Integración de sistemas</a></li>
+    <li><a href="#s9"><em>09</em> Soporte de sistemas de información</a></li>
+  </ol>
+</nav>
+
+<!-- 01 -->
+<section id="s1"><div class="svc">
+  <div class="rail"><b>01</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Soluciones con inteligencia artificial a la medida</h2>
+    <p class="kicker">Herramientas construidas alrededor del proceso del cliente, con IA donde de verdad cambia el resultado — no IA por moda.</p>
+    <ul>
+      <li>Diagnóstico del proceso y definición del caso de uso con <strong>retorno medible</strong>.</li>
+      <li>Asistentes y agentes que consultan las bases de datos reales del cliente y responden con información viva, no con un guion fijo.</li>
+      <li>Extracción automática de información desde documentos: facturas, órdenes, contratos, tickets y PDF escaneados. Salen datos estructurados listos para el sistema.</li>
+      <li>Clasificación y enrutamiento automático de correos, PQRS y solicitudes.</li>
+      <li>Generación asistida de documentos: minutas, informes, respuestas y cotizaciones.</li>
+      <li>Selección del modelo adecuado por caso — costo, latencia y calidad — y reemplazo cuando aparece uno mejor, sin reescribir la solución.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>Solución desplegada, documentación funcional y técnica, capacitación al equipo del cliente y métricas de uso.</div>
+    <div class="evid"><span>Evidencia</span>
+      <p>Chatbot en producción sobre la web de OsorIA con base de conocimiento propia de más de 60 intenciones, respaldo en modelo de lenguaje avanzado y registro de cada conversación en base de datos.</p>
+      <p>Generación de minutas a partir de transcripciones de reunión, con extracción automática de tareas y responsables, operando hoy en nuestro tablero interno. Backend de IA propio en FastAPI.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 02 -->
+<section id="s2"><div class="svc">
+  <div class="rail"><b>02</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Automatización de procesos operativos</h2>
+    <p class="kicker">Eliminar el trabajo repetitivo que hoy hace una persona a mano, mes a mes.</p>
+    <ul>
+      <li>Robots que operan portales y sistemas <strong>que no tienen API</strong>: entran con credenciales, navegan, descargan el reporte y lo dejan donde se necesita.</li>
+      <li>Tareas recurrentes programadas —diarias, semanales o por evento— con reintentos, alertas y trazabilidad de cada corrida.</li>
+      <li>Carga y validación automática de archivos Excel y CSV hacia la base de datos.</li>
+      <li>Flujos de aprobación y notificaciones automáticas por WhatsApp o correo.</li>
+      <li>Sincronización de inventarios y catálogos entre sistemas.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>Automatización productiva, panel o bitácora de ejecuciones, alertas de falla y manual de operación.</div>
+    <div class="evid"><span>Evidencia</span>
+      <p>Automatización en producción para un cliente distribuidor: un robot entra al portal de su ERP comercial, descarga el cubo de ventas mensual y lo carga al almacenamiento en la nube, disparando el pipeline de datos. Lo que era una descarga manual mes a mes hoy no lo toca nadie.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 03 -->
+<section id="s3"><div class="svc">
+  <div class="rail"><b>03</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Datos, analítica e inteligencia predictiva</h2>
+    <p class="kicker">Convertir los datos que la empresa ya tiene en decisiones que se pueden defender ante un comité.</p>
+    <ul>
+      <li><strong>Ingeniería de datos:</strong> pipelines por capas —bronce, plata, oro—, normalización, control de reprocesos y trazabilidad archivo por archivo.</li>
+      <li><strong>Modelo de indicadores:</strong> las reglas de negocio se definen junto con el cliente y se validan cifra por cifra contra sus reportes oficiales.</li>
+      <li><strong>Tableros</strong> conectados a los datos en tiempo real, segmentados por zona, línea de negocio, responsable y periodo.</li>
+      <li><strong>Análisis predictivo:</strong> proyección de demanda, comportamiento de compra, riesgo de fuga de clientes y detección de anomalías.</li>
+      <li>Comparación de presupuesto contra real y seguimiento de cumplimiento.</li>
+      <li>Herramientas: Python, SQL y PostgreSQL, FastAPI, Power BI, Tableau y modelos de IA.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>Pipeline automatizado, base de datos modelada con migraciones versionadas, API de disparo del proceso, tableros y un documento de definiciones que deja por escrito qué significa cada indicador.</div>
+    <div class="evid"><span>Evidencia</span>
+      <p>Pipeline de ventas en producción para un distribuidor de consumo masivo: procesa el cubo mensual y construye siete tablas de indicadores —mensuales, diarios, por zona y por línea de negocio— que alimentan un tablero web con control de acceso por usuario.</p>
+      <p>La validación se hizo celda por celda contra el indicador oficial del cliente: <strong>46 de 46 zonas-mes cuadradas al peso</strong>, en dos meses independientes. En el camino detectamos y corregimos definiciones erradas que inflaban indicadores entre 18 % y 190 %.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 04 -->
+<section id="s4"><div class="svc">
+  <div class="rail"><b>04</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Desarrollo web</h2>
+    <ul>
+      <li>Landing pages, sitios corporativos y micrositios de campaña.</li>
+      <li>Tiendas en línea y e-commerce con carrito y pasarelas de pago: PayU, MercadoPago, Wompi y Stripe.</li>
+      <li>Rediseño total o parcial de sitios existentes.</li>
+      <li>Portales con área privada, registro, inicio de sesión y roles.</li>
+      <li>Optimización SEO básica y avanzada; sitios totalmente responsivos.</li>
+      <li>Redacción de contenido y diseño gráfico como servicios complementarios.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>Sitio desplegado con dominio y certificado, panel de administración, acceso y capacitación para que el cliente administre su propio contenido. Tiempo promedio de 7 a 15 días hábiles según alcance.</div>
+    <div class="evid"><span>Stack</span>
+      <p>Next.js, React, TypeScript, Tailwind, Supabase y despliegue en Vercel. Sitios en producción propios y de clientes, incluida la landing corporativa de OsorIA con chatbot y métricas en vivo.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 05 -->
+<section id="s5"><div class="svc">
+  <div class="rail"><b>05</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Aplicaciones móviles</h2>
+    <ul>
+      <li>Apps Android y multiplataforma con una sola base de código.</li>
+      <li><strong>Arquitectura offline-first:</strong> la app funciona completa sin señal y sincroniza sola al reconectar. Determinante para fuerza de ventas, técnicos en campo y operación en zonas sin cobertura.</li>
+      <li>Captura de fotos y evidencias en campo, con carga automática a la nube al recuperar conexión.</li>
+      <li>Almacenamiento cifrado en el dispositivo.</li>
+      <li>Compilación firmada y publicación en Google Play.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>App publicada o distribuida, backend, panel administrativo y manual de uso.</div>
+    <div class="evid"><span>Evidencia</span>
+      <p>App de operación en campo con sincronización offline-first sobre base local que replica contra la nube, incluida la carga diferida de imágenes capturadas sin señal.</p>
+      <p>Segunda app multiplataforma —web y Android— con gestión de roles, invitaciones, calendario compartido, control de gastos y extracción automática de datos desde documentos cargados por el usuario.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 06 -->
+<section id="s6"><div class="svc">
+  <div class="rail"><b>06</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Sistemas de gestión y plataformas a la medida</h2>
+    <p class="kicker">Cuando ningún software del mercado se ajusta a la operación real del cliente.</p>
+    <ul>
+      <li>CRM y plataformas comerciales a la medida.</li>
+      <li>Sistemas administrativos y de gestión operativa por sector: control de servicios en campo, gestión de clientes y programación de visitas.</li>
+      <li>Gestión de proyectos con tableros Kanban, historias de usuario, seguimiento de tareas y métricas de equipo.</li>
+      <li>Sistemas de reservas y agenda digital.</li>
+      <li>Multiempresa y multiusuario con <strong>seguridad a nivel de fila</strong>: cada empresa y cada rol ve exactamente lo que le corresponde.</li>
+      <li>Integración con facturación electrónica a través de proveedores autorizados.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>Plataforma en producción, esquema de base de datos documentado, matriz de roles y permisos, y capacitación.</div>
+    <div class="evid"><span>Evidencia</span>
+      <p>Tablero interno de OsorIA en operación: proyectos, historias de usuario, minutas, tareas, métricas por repositorio y base multiempresa. Sistema de gestión de servicios y clientes en producción para un cliente del sector de control de plagas.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 07 -->
+<section id="s7"><div class="svc">
+  <div class="rail"><b>07</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>WhatsApp Business API y canales conversacionales</h2>
+    <ul>
+      <li>Acompañamiento completo en la <strong>validación y verificación del número ante Meta</strong> para acceder a WhatsApp Business API oficial.</li>
+      <li>Beneficios que se desbloquean: mayor capacidad de envío, plantillas masivas aprobadas y sello de verificación.</li>
+      <li>Chatbots para WhatsApp y web con flujos de venta, agendamiento y soporte.</li>
+      <li>Automatización de la conversación de ventas conectada al CRM.</li>
+      <li>Botones y enlaces directos de WhatsApp integrados al sitio.</li>
+      <li>Acompañamiento en casos de números bloqueados o restringidos.</li>
+    </ul>
+    <div class="evid"><span>Lo decimos de frente</span>
+      <p>La API oficial exige una cuenta empresarial verificada. No hay atajo, y prometerlo es vender humo. Lo que sí hacemos es guiar todo el proceso hasta que el número quede aprobado.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 08 -->
+<section id="s8"><div class="svc">
+  <div class="rail"><b>08</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Integración e interoperabilidad de sistemas</h2>
+    <p class="kicker">Que los sistemas que ya existen trabajen como un conjunto, sin islas de información ni doble digitación.</p>
+    <ul>
+      <li>Integración vía API con ERP, CRM, POS, nómina y sistemas contables.</li>
+      <li>Conexión con transportadoras y operadores logísticos: Servientrega, Coordinadora, Envía y otros.</li>
+      <li>Integración con pasarelas de pago y facturación electrónica.</li>
+      <li>Puentes hacia sistemas heredados sin API, mediante automatización controlada.</li>
+      <li>Migración de datos entre plataformas, con validación y conciliación.</li>
+      <li>Diseño y exposición de APIs propias del cliente para que terceros consuman su información de forma segura.</li>
+    </ul>
+    <div class="deliv"><span>Se entrega</span>Integración funcionando, documentación de la interfaz, manejo de errores y monitoreo.</div>
+  </div>
+</div></section>
+
+<!-- 09 -->
+<section id="s9"><div class="svc">
+  <div class="rail"><b>09</b><i>Servicio</i></div>
+  <div class="body-col">
+    <h2>Soporte de sistemas de información</h2>
+    <p class="kicker">Servicio continuo. No es solo arreglar lo que se dañó: es mantener el sistema vivo, seguro y evolucionando.</p>
+
+    <h3>Mesa de ayuda y atención escalonada</h3>
+    <p>Canal único de reporte —correo, WhatsApp o portal de tickets— y tres niveles de atención con acuerdos de servicio por severidad, definidos y firmados antes de arrancar.</p>
+    <div class="tiers">
+      <div class="tier"><b>Nivel 1</b><p>Atención al usuario, dudas de uso, restablecimiento de accesos e incidentes conocidos.</p></div>
+      <div class="tier"><b>Nivel 2</b><p>Diagnóstico técnico, revisión de bitácoras, corrección de datos y reproceso de cargas.</p></div>
+      <div class="tier"><b>Nivel 3</b><p>Corrección en el código, cambios de arquitectura e intervención en base de datos.</p></div>
+    </div>
+
+    <h3>Mantenimiento</h3>
+    <ul>
+      <li><strong>Correctivo:</strong> corrección de fallas y defectos en producción.</li>
+      <li><strong>Preventivo:</strong> actualización de dependencias y parches de seguridad, revisión de rendimiento, limpieza de datos y verificación de respaldos.</li>
+      <li><strong>Evolutivo:</strong> nuevos requerimientos y mejoras funcionales, por bolsa de horas o alcance cerrado.</li>
+      <li><strong>Adaptativo:</strong> ajustes por cambios normativos, tributarios o de proveedores externos.</li>
+    </ul>
+
+    <h3>Administración de la plataforma</h3>
+    <ul>
+      <li>Bases de datos: respaldos, restauración probada, optimización de consultas y migraciones versionadas.</li>
+      <li>Gestión de usuarios, roles y permisos; altas, bajas y revisión periódica de accesos.</li>
+      <li>Monitoreo de disponibilidad, alertas ante caídas y reporte mensual de disponibilidad.</li>
+      <li>Administración de hosting, dominios, certificados SSL y despliegues.</li>
+      <li>Plan de respaldo y recuperación con tiempos objetivo acordados.</li>
+    </ul>
+
+    <h3>Gobierno y acompañamiento</h3>
+    <ul>
+      <li>Informe mensual: tickets atendidos, tiempos de respuesta, disponibilidad, cambios aplicados y riesgos abiertos.</li>
+      <li>Documentación viva del sistema —funcional, técnica y de operación.</li>
+      <li>Capacitación y reinducción a usuarios nuevos, y comité periódico de seguimiento.</li>
+      <li><strong>Sin secuestro tecnológico:</strong> el cliente es dueño de su código, sus datos y su documentación, y el traspaso de conocimiento es parte del servicio.</li>
+    </ul>
+
+    <h3>Modalidades</h3>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Modalidad</th><th>Para quién</th><th>Qué incluye</th></tr></thead>
+        <tbody>
+          <tr><td class="svc-name">Bolsa de horas</td><td>Sistemas estables con necesidades puntuales</td><td>Horas prepagadas con consumo mensual reportado</td></tr>
+          <tr><td class="svc-name">Soporte mensual por niveles</td><td>Operación crítica</td><td>SLA definido, mesa de ayuda, mantenimiento preventivo y correctivo</td></tr>
+          <tr><td class="svc-name">Soporte + evolutivo</td><td>Producto en crecimiento</td><td>Todo lo anterior más cupo mensual de desarrollo de nuevas funciones</td></tr>
+          <tr><td class="svc-name">Sistemas de terceros</td><td>Software heredado de otro proveedor</td><td>Levantamiento, documentación y asunción del mantenimiento</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="evid"><span>Condición</span>
+      <p>Recibimos sistemas construidos por otros proveedores. El primer paso es siempre un levantamiento técnico y una documentación del estado real, antes de asumir cualquier compromiso de servicio.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- Cómo trabajamos -->
+<section id="metodo"><div class="svc">
+  <div class="rail"><b>—</b><i>Método</i></div>
+  <div class="body-col">
+    <h2>Cómo trabajamos</h2>
+    <p class="kicker">Lo que nos separa de un proveedor que solo entrega código.</p>
+    <div class="prins">
+      <div class="prin"><div><h4>Modelos de lenguaje de punta</h4><p>Trabajamos con los modelos más capaces disponibles hoy y los cambiamos cuando aparece uno mejor. La herramienta no es el diferencial: lo que hacemos con ella, sí.</p></div></div>
+      <div class="prin"><div><h4>Las decisiones son del cliente</h4><p>Antes de escribir una línea mapeamos la superficie del cambio y llevamos las decisiones reales con sus alternativas. Nada de arquitectura elegida a espaldas del cliente.</p></div></div>
+      <div class="prin"><div><h4>Verificación independiente</h4><p>Quien escribe el código nunca es quien lo aprueba. Un revisor aparte, sin el contexto de quien lo construyó, valida cada cambio contra criterios definidos de antemano. Así cazamos las alucinaciones antes de que lleguen a producción.</p></div></div>
+      <div class="prin"><div><h4>Seguridad antes del despliegue</h4><p>Todo cambio que toque autenticación, pagos o datos pasa por una revisión de seguridad dedicada, y los hallazgos se corrigen y se vuelven a revisar hasta quedar limpios.</p></div></div>
+      <div class="prin"><div><h4>Validación contra la realidad del cliente</h4><p>No damos por bueno un indicador porque el código corrió: lo cuadramos contra el reporte oficial del cliente antes de decir que está listo.</p></div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- Alianza -->
+<section id="alianza"><div class="svc">
+  <div class="rail"><b>—</b><i>Alianza</i></div>
+  <div class="body-col">
+    <h2>Tres formas de trabajar juntos</h2>
+    <p class="kicker">No son excluyentes: pueden convivir según el cliente y el tamaño del negocio.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Modelo</th><th>Cómo funciona</th><th>Cuándo conviene</th></tr></thead>
+        <tbody>
+          <tr><td class="svc-name">Referenciación</td><td>SM identifica la oportunidad, OsorIA cotiza y ejecuta; se acuerda comisión sobre el negocio cerrado</td><td>Cliente de SM que necesita algo fuera del alcance actual de SM</td></tr>
+          <tr><td class="svc-name">Marca blanca</td><td>OsorIA ejecuta como fábrica técnica detrás de SM; el cliente ve a SM</td><td>SM amplía su portafolio sin montar equipo técnico</td></tr>
+          <tr><td class="svc-name">Coejecución</td><td>Ambas firmas ante el cliente, cada una con su alcance y su responsabilidad</td><td>Proyectos grandes o licitaciones donde suman las dos hojas de vida</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Lo que necesitamos definir juntos</h3>
+    <ul>
+      <li>Qué modelo, o combinación de modelos, aplica.</li>
+      <li>Tabla de tarifas y comisiones.</li>
+      <li>Acuerdo de confidencialidad y de no competencia sobre clientes referidos.</li>
+      <li>Un canal único de entrada de oportunidades, con tiempo de respuesta de cotización comprometido.</li>
+      <li><strong>Un piloto:</strong> un cliente real, alcance pequeño, para probar la mecánica antes de escalar.</li>
+    </ul>
+    <div class="deliv"><span>Contratación con el cliente final</span>Proyecto cerrado por alcance, bolsa de horas, mensualidad de soporte o esquema mixto. Manejamos pago por etapas del proyecto y emitimos factura.</div>
+  </div>
+</div></section>
+
+<!-- Tabla rápida -->
+<section id="catalogo"><div class="svc">
+  <div class="rail"><b>—</b><i>Catálogo</i></div>
+  <div class="body-col">
+    <h2>Catálogo completo para la propuesta comercial</h2>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th></th><th>Servicio</th><th>Modalidad típica</th></tr></thead>
+        <tbody>
+          <tr><td class="num">01</td><td class="svc-name">Soluciones con IA a la medida</td><td>Proyecto cerrado</td></tr>
+          <tr><td class="num">02</td><td class="svc-name">Automatización de procesos y RPA</td><td>Proyecto + soporte</td></tr>
+          <tr><td class="num">03</td><td class="svc-name">Ingeniería de datos y pipelines ETL</td><td>Proyecto + soporte</td></tr>
+          <tr><td class="num">04</td><td class="svc-name">Tableros de indicadores y analítica</td><td>Proyecto + mensualidad</td></tr>
+          <tr><td class="num">05</td><td class="svc-name">Análisis predictivo</td><td>Proyecto cerrado</td></tr>
+          <tr><td class="num">06</td><td class="svc-name">Landing pages y sitios corporativos</td><td>Proyecto cerrado</td></tr>
+          <tr><td class="num">07</td><td class="svc-name">E-commerce y tiendas en línea</td><td>Proyecto + soporte</td></tr>
+          <tr><td class="num">08</td><td class="svc-name">Aplicaciones móviles y offline-first</td><td>Proyecto + soporte</td></tr>
+          <tr><td class="num">09</td><td class="svc-name">CRM y sistemas de gestión a la medida</td><td>Proyecto + evolutivo</td></tr>
+          <tr><td class="num">10</td><td class="svc-name">Chatbots web y WhatsApp</td><td>Proyecto + mensualidad</td></tr>
+          <tr><td class="num">11</td><td class="svc-name">Validación de WhatsApp API ante Meta</td><td>Servicio puntual</td></tr>
+          <tr><td class="num">12</td><td class="svc-name">Integración de sistemas y APIs</td><td>Proyecto cerrado</td></tr>
+          <tr><td class="num">13</td><td class="svc-name">Migración de datos entre plataformas</td><td>Proyecto cerrado</td></tr>
+          <tr><td class="num">14</td><td class="svc-name">Facturación electrónica y pasarelas de pago</td><td>Complemento</td></tr>
+          <tr><td class="num">15</td><td class="svc-name">Integración con transportadoras y logística</td><td>Complemento</td></tr>
+          <tr class="flag"><td class="num">16</td><td class="svc-name">Soporte de sistemas de información</td><td>Mensualidad / bolsa de horas</td></tr>
+          <tr><td class="num">17</td><td class="svc-name">Administración de bases de datos y respaldos</td><td>Mensualidad</td></tr>
+          <tr><td class="num">18</td><td class="svc-name">Hosting, dominios, SSL y despliegues</td><td>Mensualidad</td></tr>
+          <tr><td class="num">19</td><td class="svc-name">SEO y campañas en Meta Ads y Google Ads</td><td>Mensualidad</td></tr>
+          <tr><td class="num">20</td><td class="svc-name">Diseño gráfico, branding y contenido</td><td>Complemento</td></tr>
+          <tr><td class="num">21</td><td class="svc-name">Capacitación y transferencia de conocimiento</td><td>Complemento</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></section>
+
+<!-- Correo -->
+<section id="correo"><div class="svc">
+  <div class="rail"><b>✉</b><i>Envío</i></div>
+  <div class="body-col" style="max-width:none">
+    <h2>Correo listo para enviar</h2>
+    <p class="kicker">Copiar tal cual, o ajustar el saludo con el nombre del contacto directo en SM.</p>
+
+    <div class="mail">
+      <div class="mail-head"><span>Borrador</span><span>Listo para copiar</span></div>
+      <div class="mail-body">
+        <div class="mail-meta">
+          <div><i>Para</i><span>SM BUSINESS SOLUTIONS S.A.S.</span></div>
+          <div><i>Asunto</i><span>Portafolio de servicios OsorIA.tech — propuesta de alianza</span></div>
+        </div>
+
+        <p>Estimado equipo de SM BUSINESS SOLUTIONS S.A.S.:</p>
+        <p>Reciban un cordial saludo.</p>
+        <p>Con el ánimo de dar forma a la alianza entre nuestras compañías, les comparto el portafolio completo de servicios que OsorIA.tech puede prestar, ya sea para clientes que ustedes referencien, para proyectos que ejecutemos como su equipo técnico, o para propuestas que presentemos en conjunto.</p>
+        <p><strong>Quiénes somos.</strong> OsorIA.tech es una compañía colombiana de tecnología especializada en soluciones con inteligencia artificial. Construimos, integramos y sostenemos software: desde el modelo predictivo y la automatización que elimina el trabajo manual, hasta la página web, la aplicación móvil y el soporte del sistema que queda funcionando después.</p>
+        <p><strong>Nuestras líneas de servicio:</strong></p>
+        <p><strong>1. Soluciones con inteligencia artificial a la medida.</strong> Asistentes y agentes conectados a las bases de datos reales del cliente, extracción automática de información desde facturas, contratos y documentos escaneados, clasificación automática de solicitudes y generación asistida de informes.</p>
+        <p><strong>2. Automatización de procesos operativos.</strong> Robots que operan portales y sistemas que no tienen API: entran, navegan, descargan el reporte y lo entregan procesado. Tareas programadas con alertas y trazabilidad. Hoy tenemos automatizaciones de este tipo corriendo en producción.</p>
+        <p><strong>3. Datos, analítica e inteligencia predictiva.</strong> Pipelines de datos por capas, modelamiento de indicadores validados cifra por cifra contra los reportes oficiales del cliente, tableros en tiempo real y modelos predictivos de demanda, comportamiento de compra y detección de anomalías. Trabajamos con Python, SQL, FastAPI, Power BI y Tableau.</p>
+        <p><strong>4. Desarrollo web.</strong> Landing pages, sitios corporativos, e-commerce con pasarelas de pago, portales con área privada y roles, optimización SEO y rediseño de sitios existentes. Tiempo promedio de entrega entre 7 y 15 días hábiles según alcance.</p>
+        <p><strong>5. Aplicaciones móviles.</strong> Apps Android y multiplataforma, incluida arquitectura offline-first: la aplicación funciona completa sin señal y sincroniza sola al reconectar. Es determinante para fuerza de ventas y personal en campo.</p>
+        <p><strong>6. Sistemas de gestión a la medida.</strong> CRM, sistemas administrativos por sector, gestión de proyectos, agendamiento y reservas, con esquema multiempresa y seguridad por roles.</p>
+        <p><strong>7. WhatsApp Business API y canales conversacionales.</strong> Acompañamiento completo en la validación y verificación del número ante Meta, chatbots para WhatsApp y web, y automatización de la conversación de ventas conectada al CRM.</p>
+        <p><strong>8. Integración e interoperabilidad.</strong> Conexión con ERP, CRM, POS, transportadoras, pasarelas de pago y facturación electrónica; migración de datos entre plataformas; y puentes hacia sistemas heredados que no tienen API.</p>
+        <p><strong>9. Soporte de sistemas de información.</strong> Servicio continuo con mesa de ayuda y atención escalonada en tres niveles, acuerdos de nivel de servicio por severidad, mantenimiento correctivo, preventivo, evolutivo y adaptativo, administración de bases de datos y respaldos, gestión de usuarios y accesos, monitoreo de disponibilidad, administración de hosting y dominios, e informe mensual de gestión. Lo prestamos tanto sobre desarrollos propios como sobre sistemas construidos por otros proveedores, previo levantamiento técnico.</p>
+        <p><strong>10. Servicios complementarios.</strong> SEO y campañas en Meta Ads y Google Ads, diseño gráfico y branding, redacción de contenido, y capacitación a usuarios.</p>
+        <p><strong>Cómo trabajamos.</strong> Trabajamos con los modelos de lenguaje más capaces disponibles y los cambiamos cuando aparece uno mejor. Las decisiones de arquitectura las lleva el cliente, con alternativas sobre la mesa. Quien escribe el código nunca es quien lo aprueba: un revisor independiente valida cada cambio antes de que llegue a producción, y todo lo que toque autenticación, pagos o datos pasa además por una revisión de seguridad dedicada.</p>
+        <p><strong>Modalidades de contratación.</strong> Proyecto cerrado por alcance, bolsa de horas, mensualidad de soporte o esquema mixto. Manejamos pago por etapas del proyecto y emitimos factura.</p>
+        <p><strong>Propuesta de alianza.</strong> Vemos tres formas de trabajar juntos, no excluyentes entre sí: referenciación con comisión sobre el negocio cerrado, marca blanca donde operamos como su equipo técnico, o coejecución conjunta ante el cliente. Nos gustaría acordar cuál se ajusta mejor, definir tarifas y comisiones, y arrancar con un piloto pequeño para probar la mecánica antes de escalar.</p>
+        <p>Quedo atento a coordinar una reunión para revisar el portafolio en detalle y avanzar en la definición del acuerdo.</p>
+        <p>Cordial saludo,</p>
+
+        <div class="sig">
+          <b>Nicolás Vásquez</b>
+          OsorIA.tech<br>
+          nicolas.vasquez@osoria.tech<br>
+          osoria.tech
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<div class="close">
+  <span>OsorIA.tech · Portafolio de servicios</span>
+  <span>SM Business Solutions S.A.S. · Agosto 2026</span>
+</div>
+
+</div>
